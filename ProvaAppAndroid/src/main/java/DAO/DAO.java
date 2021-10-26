@@ -1,9 +1,6 @@
 package DAO;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DAO {
     private static final String url = "jdbc:mysql://localhost:3306/prova_app";
@@ -39,5 +36,33 @@ public class DAO {
         }
 
         return ret;
+    }
+
+    public static User getUser(String query) {
+        Connection conn = null;
+        User u = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                u = new User(rs.getString("Name"), rs.getString("Email"), rs.getString("Password"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        return u;
     }
 }
