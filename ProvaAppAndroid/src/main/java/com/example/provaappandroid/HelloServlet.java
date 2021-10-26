@@ -16,8 +16,8 @@ public class HelloServlet extends HttpServlet {
         message = "Hello World!";
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String nome = request.getParameter("nome");
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String nome = request.getParameter("name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
