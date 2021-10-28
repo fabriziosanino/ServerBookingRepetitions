@@ -21,6 +21,8 @@ public class ServletRegistration extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        HttpSession session = request.getSession();
+
         int result = DAO.queryDB("INSERT INTO utente VALUES(NULL, '" + nome + "', '" + email + "', '" + password + "')");
 
         response.setContentType("application/json");
@@ -39,6 +41,9 @@ public class ServletRegistration extends HttpServlet {
                 jsonObject.put("done", true);
                 jsonObject.put("name", nome);
                 jsonObject.put("email", email);
+
+                session.setAttribute("name", nome);
+                session.setAttribute("email", email);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

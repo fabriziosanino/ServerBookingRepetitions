@@ -20,6 +20,8 @@ public class ServletLogin extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
@@ -31,6 +33,8 @@ public class ServletLogin extends HttpServlet {
 
         if(password.equals(dbUser.getPassword())) {
             try {
+                session.setAttribute("email", dbUser.getEmail());
+
                 jsonObject.put("done", true);
                 jsonObject.put("name", dbUser.getName());
             } catch (JSONException e) {
