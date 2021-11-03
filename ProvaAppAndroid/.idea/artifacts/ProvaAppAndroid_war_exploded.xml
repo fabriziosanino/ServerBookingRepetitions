@@ -18,6 +18,7 @@
           <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.44" />
           <element id="library" level="project" name="Maven: org.mortbay.jetty:jetty-util:6.1.25" />
           <element id="library" level="project" name="Maven: org.json:json:20090211" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.15" />
         </element>
       </element>
       <element id="directory" name="META-INF">

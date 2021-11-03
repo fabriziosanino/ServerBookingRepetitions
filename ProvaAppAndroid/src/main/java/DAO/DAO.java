@@ -3,9 +3,15 @@ package DAO;
 import java.sql.*;
 
 public class DAO {
-    private static final String url = "jdbc:mysql://localhost:3306/prova_app";
-    private static final String user = "root";
-    private static final String password = "";
+    private String url;
+    private String user;
+    private String password;
+
+    public DAO(String url, String usr, String pwd) {
+        this.url = url;
+        this.user = usr;
+        this.password = pwd;
+    }
 
     public static void registerDriver() {
         try{
@@ -15,7 +21,7 @@ public class DAO {
         }
     }
 
-    public static int queryDB(String query) {
+    public int queryDB(String query) {
         Connection conn = null;
         int ret = -1;
         try {
@@ -38,7 +44,7 @@ public class DAO {
         return ret;
     }
 
-    public static User getUser(String query) {
+    public User getUser(String query) {
         Connection conn = null;
         User u = null;
 

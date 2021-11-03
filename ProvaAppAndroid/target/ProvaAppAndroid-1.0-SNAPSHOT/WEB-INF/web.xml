@@ -6,4 +6,19 @@
     <session-config>
         <session-timeout>1</session-timeout>
     </session-config>
+    <context-param>
+        <description>url del DB</description>
+        <param-name>DB-URL</param-name>
+        <param-value>jdbc:mysql://localhost:3306/prova_app</param-value>
+    </context-param>
+    <context-param>
+        <description>account per accedere al DB</description>
+        <param-name>user</param-name>
+        <param-value>root</param-value>
+    </context-param>
+    <context-param>
+        <description>password per accedere al SB</description>
+        <param-name>password</param-name>
+        <param-value></param-value>
+    </context-param>
 </web-app>
