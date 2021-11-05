@@ -1,25 +1,47 @@
 package DAO;
 
 public class User {
+    String account;
+    String pwd;
+    String role;
     String name;
-    String email;
-    String password;
+    String surname;
 
-    public User(String name, String email, String password) {
+    //user used for Registration
+    public User(String account, String pwd, String role, String name, String surname) {
+        this.account = account;
+        this.pwd = pwd;
+        this.role = role;
         this.name = name;
-        this.email = email;
-        this.password = password;
+        this.surname = surname;
+    }
+
+    //user used for Login
+    public User(String account, String pwd, String name, String surname) {
+        this.account = account;
+        this.pwd = pwd;
+        this.name = name;
+        this.surname = surname;
+    }
+
+
+    public String getAccount() {
+        return account;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
+    public String getSurname() {
+        return surname;
     }
 }

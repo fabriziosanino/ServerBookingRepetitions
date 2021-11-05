@@ -9,7 +9,7 @@
     <context-param>
         <description>url del DB</description>
         <param-name>DB-URL</param-name>
-        <param-value>jdbc:mysql://localhost:3306/prova_app</param-value>
+        <param-value>jdbc:mysql://localhost:3306/iumtweb</param-value>
     </context-param>
     <context-param>
         <description>account per accedere al DB</description>
@@ -17,7 +17,7 @@
         <param-value>root</param-value>
     </context-param>
     <context-param>
-        <description>password per accedere al SB</description>
+        <description>password per accedere al DB</description>
         <param-name>password</param-name>
         <param-value></param-value>
     </context-param>

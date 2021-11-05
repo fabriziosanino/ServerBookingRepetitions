@@ -1,6 +1,11 @@
 package DAO;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DAO {
     private String url;
@@ -55,7 +60,7 @@ public class DAO {
             ResultSet rs = st.executeQuery(query);
 
             while (rs.next()) {
-                u = new User(rs.getString("Name"), rs.getString("Email"), rs.getString("Password"));
+                u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -70,5 +75,43 @@ public class DAO {
         }
 
         return u;
+    }
+
+    public JSONArray getBookedRepetitions(String query){
+        Connection conn = null;
+        JSONArray dbBookedRepetitions = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+
+            dbBookedRepetitions = new JSONArray();
+            while (rs.next()) {
+                try {
+                    JSONObject innerObj = new JSONObject();
+                    innerObj.put("day", rs.getString("day"));
+                    innerObj.put("startTime", rs.getString("startTime"));
+                    innerObj.put("IDCourse", rs.getInt("IDCourse"));
+                    innerObj.put("IDTeacher", rs.getInt("IDTeacher"));
+                    dbBookedRepetitions.put(innerObj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        return dbBookedRepetitions;
     }
 }

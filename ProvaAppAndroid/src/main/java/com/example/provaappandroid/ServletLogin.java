@@ -1,6 +1,7 @@
 package com.example.provaappandroid;
 
-import DAO.*;
+import DAO.DAO;
+import DAO.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 import service.Service;
@@ -33,31 +34,25 @@ public class ServletLogin extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        String email = request.getParameter("email");
+        String account = request.getParameter("account");
         String password = request.getParameter("password");
 
-        User dbUser = dao.getUser("SELECT * FROM utente WHERE Email = '" + email + "'");
+        User dbUser = dao.getUser("SELECT * FROM users WHERE Account = '" + account + "' AND Pwd = '"+Service.encryptMD5(password)+"'");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
         if(dbUser != null) {
-            if (Service.checkMD5(dbUser.getPassword(), password)) {
-                try {
-                    session.setAttribute("email", dbUser.getEmail());
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("account", dbUser.getAccount());
+                jsonObject.put("name", dbUser.getName());
+                jsonObject.put("surname", dbUser.getSurname());
 
-                    jsonObject.put("done", true);
-                    jsonObject.put("name", dbUser.getName());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    jsonObject.put("done", false);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                session.setAttribute("account", dbUser.getAccount());
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         } else {
             try {

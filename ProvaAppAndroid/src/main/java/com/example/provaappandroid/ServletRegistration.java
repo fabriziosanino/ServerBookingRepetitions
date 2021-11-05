@@ -28,15 +28,15 @@ public class ServletRegistration extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String nome = request.getParameter("name");
-        String email = request.getParameter("email");
+        String account = request.getParameter("account");
         String password = request.getParameter("password");
+        String name = request.getParameter("name");
+        String surname = request.getParameter("surname");
 
         HttpSession session = request.getSession();
 
-        password = Service.encryptMD5(password);
-
-        int result = dao.queryDB("INSERT INTO utente VALUES(NULL, '" + nome + "', '" + email + "', '" + password + "')");
+        // TODO: parametri query da rivedere, usare injection sql NON hardcoded
+        int result = dao.queryDB("INSERT INTO users VALUES('"+account+"', '"+Service.encryptMD5(password)+"', '"+name+"', '"+surname+"', 'Client')");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
@@ -52,11 +52,13 @@ public class ServletRegistration extends HttpServlet {
         } else {
             try {
                 jsonObject.put("done", true);
-                jsonObject.put("name", nome);
-                jsonObject.put("email", email);
+                jsonObject.put("account", account);
+                jsonObject.put("pwd", password);
+                jsonObject.put("role", "Client");
+                jsonObject.put("name", name);
+                jsonObject.put("surname", surname);
 
-                session.setAttribute("name", nome);
-                session.setAttribute("email", email);
+                session.setAttribute("account", account);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
