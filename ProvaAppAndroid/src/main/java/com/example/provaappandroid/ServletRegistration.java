@@ -28,10 +28,24 @@ public class ServletRegistration extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String account = request.getParameter("account");
-        String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String surname = request.getParameter("surname");
+        String account = null;
+        String password = null;
+        String name = null;
+        String surname = null;
+
+        BufferedReader bufferedReader = request.getReader();
+        String postParameters =  bufferedReader.readLine();
+
+        JSONObject json = null;
+        try {
+            json = new JSONObject(postParameters);
+            account = json.getString("account");
+            password = json.getString("password");
+            name = json.getString("name");
+            surname = json.getString("surname");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         HttpSession session = request.getSession();
 
@@ -66,6 +80,8 @@ public class ServletRegistration extends HttpServlet {
 
         out.print(jsonObject);
         out.flush();
+
+        out.close();
     }
 
     public void destroy() {

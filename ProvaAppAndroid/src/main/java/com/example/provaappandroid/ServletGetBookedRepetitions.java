@@ -55,5 +55,6 @@ public class ServletGetBookedRepetitions extends HttpServlet {
 
     out.print(jsonObject);
     out.flush();
+    out.close();
   }
 }
