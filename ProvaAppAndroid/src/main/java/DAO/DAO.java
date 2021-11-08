@@ -3,6 +3,7 @@ package DAO;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import service.Service;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -26,19 +27,27 @@ public class DAO {
         }
     }
 
-    public int queryDB(String query) {
+    public int insertClientUser(String account, String pwd, String name, String surname, String role) {
         Connection conn = null;
+        PreparedStatement st = null;
         int ret = -1;
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            Statement st = conn.createStatement();
-            ret = st.executeUpdate(query);
+            String query = "INSERT INTO users VALUES(?, ?, ?, ?, ?);";
+            st = conn.prepareStatement(query);
+            st.setString(1, account);
+            st.setString(2, pwd);
+            st.setString(3, name);
+            st.setString(4, surname);
+            st.setString(5, role);
+            ret = st.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            if(conn != null) {
+            if(conn != null && st != null) {
                 try {
+                    st.close();
                     conn.close();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
@@ -49,15 +58,19 @@ public class DAO {
         return ret;
     }
 
-    public User getUser(String query) {
+    public User checkLogin(String account, String pwd) {
         Connection conn = null;
+        PreparedStatement st = null;
         User u = null;
 
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            String query = "SELECT * FROM users WHERE Account = ? AND Pwd = ?;";
+            st = conn.prepareStatement(query);
+            st.setString(1, account);
+            st.setString(2, pwd);
+            ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
@@ -65,8 +78,9 @@ public class DAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            if(conn != null) {
+            if(conn != null && st != null) {
                 try {
+                    st.close();
                     conn.close();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
@@ -77,15 +91,50 @@ public class DAO {
         return u;
     }
 
-    public JSONArray getBookedRepetitions(String query){
+    public User checkSession(String account) {
         Connection conn = null;
+        PreparedStatement st = null;
+        User u = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            String query = "SELECT * FROM users WHERE Account = ?;";
+            st = conn.prepareStatement(query);
+            st.setString(1, account);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        return u;
+    }
+
+    public JSONArray getBookedRepetitions(String state){
+        Connection conn = null;
+        PreparedStatement st = null;
         JSONArray dbBookedRepetitions = null;
 
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            String query = "SELECT Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE State = ?;";
+            st = conn.prepareStatement(query);
+            st.setString(1, state);
+            ResultSet rs = st.executeQuery();
 
             dbBookedRepetitions = new JSONArray();
             while (rs.next()) {
@@ -103,8 +152,9 @@ public class DAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            if(conn != null) {
+            if(conn != null && st != null) {
                 try {
+                    st.close();
                     conn.close();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());

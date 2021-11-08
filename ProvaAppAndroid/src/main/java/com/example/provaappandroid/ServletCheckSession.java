@@ -37,7 +37,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
     if(!session.isNew()) {
         if(session.getAttribute("account") != null) {
             String account = session.getAttribute("account").toString();
-            User dbUser = dao.getUser("SELECT * FROM users WHERE Account = '" + account +"'");
+            User dbUser = dao.checkSession(account);
 
             try {
                 jsonObject.put("done", true);
