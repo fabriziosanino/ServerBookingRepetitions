@@ -47,34 +47,40 @@ public class ServletRegistration extends HttpServlet {
             e.printStackTrace();
         }
 
-        HttpSession session = request.getSession();
-
-        // TODO: parametri query da rivedere, usare injection sql NON hardcoded
-        int result = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
-
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-
         JSONObject jsonObject = new JSONObject();
 
-        if(result == -1){
+        if(account == null || password == null || name == null || surname == null){
             try {
                 jsonObject.put("done", false);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         } else {
-            try {
-                jsonObject.put("done", true);
-                jsonObject.put("account", account);
-                jsonObject.put("pwd", password);
-                jsonObject.put("role", "Client");
-                jsonObject.put("name", name);
-                jsonObject.put("surname", surname);
+            int result = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
 
-                session.setAttribute("account", account);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if (result == -1) {
+                try {
+                    jsonObject.put("done", false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    HttpSession session = request.getSession();
+
+                    jsonObject.put("done", true);
+                    jsonObject.put("account", account);
+                    jsonObject.put("pwd", password);
+                    jsonObject.put("role", "Client");
+                    jsonObject.put("name", name);
+                    jsonObject.put("surname", surname);
+
+                    session.setAttribute("account", account);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
