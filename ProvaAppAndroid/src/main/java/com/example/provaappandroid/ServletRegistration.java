@@ -50,7 +50,7 @@ public class ServletRegistration extends HttpServlet {
         HttpSession session = request.getSession();
 
         // TODO: parametri query da rivedere, usare injection sql NON hardcoded
-        int result = dao.queryDB("INSERT INTO users VALUES('"+account+"', '"+Service.encryptMD5(password)+"', '"+name+"', '"+surname+"', 'Client')");
+        int result = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

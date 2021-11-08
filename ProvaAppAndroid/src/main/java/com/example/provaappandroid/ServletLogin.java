@@ -50,7 +50,7 @@ public class ServletLogin extends HttpServlet {
             e.printStackTrace();
         }
 
-        User dbUser = dao.getUser("SELECT * FROM users WHERE Account = '" + account + "' AND Pwd = '"+Service.encryptMD5(password)+"'");
+        User dbUser = dao.checkLogin(account, Service.encryptMD5(password));
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

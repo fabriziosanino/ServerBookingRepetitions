@@ -32,7 +32,7 @@ public class ServletGetBookedRepetitions extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    JSONArray dbBookedRepetitions = dao.getBookedRepetitions("SELECT Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE State = 'Active'");
+    JSONArray dbBookedRepetitions = dao.getBookedRepetitions("Active");
 
     response.setContentType("application/json");
     PrintWriter out = response.getWriter();
