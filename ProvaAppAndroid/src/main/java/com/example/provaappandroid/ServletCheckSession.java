@@ -34,10 +34,10 @@ public class ServletCheckSession extends HttpServlet {
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
-    if(!session.isNew()) {
-        if(session.getAttribute("account") != null) {
-            String account = session.getAttribute("account").toString();
-            User dbUser = dao.checkSession(account);
+        if (!session.isNew()) {
+            if (session.getAttribute("account") != null) {
+                String account = session.getAttribute("account").toString();
+                User dbUser = dao.checkSession(account);
 
                 try {
                     jsonObject.put("done", true);
@@ -65,6 +65,22 @@ public class ServletCheckSession extends HttpServlet {
         out.print(jsonObject);
         out.flush();
 
+        out.close();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("done", true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        out.print(jsonObject);
+        out.flush();
         out.close();
     }
 }

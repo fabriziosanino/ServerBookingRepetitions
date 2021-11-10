@@ -1,6 +1,7 @@
 package com.example.provaappandroid;
 
 import DAO.DAO;
+import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,18 +63,19 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
         e.printStackTrace();
       }
     } else {
-      JSONArray dbBookedRepetitions = dao.getBookedHistoryRepetitions(state, account);
+      Pair<JSONArray, String> dbValue = dao.getBookedHistoryRepetitions(state, account);
 
-      if (dbBookedRepetitions != null) {
+      if (dbValue.getKey() != null) {
         try {
           jsonObject.put("done", true);
-          jsonObject.put("results", dbBookedRepetitions);
+          jsonObject.put("results", dbValue.getKey());
         } catch (JSONException e) {
           e.printStackTrace();
         }
       } else {
         try {
           jsonObject.put("done", false);
+          jsonObject.put("error", dbValue.getValue());
         } catch (JSONException e) {
           e.printStackTrace();
         }

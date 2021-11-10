@@ -1,5 +1,6 @@
 package DAO;
 
+import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,10 +124,11 @@ public class DAO {
         return u;
     }
 
-    public JSONArray getBookedRepetitions(String state){
+    public Pair<JSONArray, String> getBookedRepetitions(String state){
         Connection conn = null;
         PreparedStatement st = null;
         JSONArray dbBookedRepetitions = null;
+        String error = null;
 
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -147,10 +149,12 @@ public class DAO {
                     dbBookedRepetitions.put(innerObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    error = e.getMessage();
                 }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            error = e.getMessage();
         } finally {
             if(conn != null && st != null) {
                 try {
@@ -158,17 +162,19 @@ public class DAO {
                     conn.close();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
+                    error = e.getMessage();
                 }
             }
         }
 
-        return dbBookedRepetitions;
+        return new Pair<>(dbBookedRepetitions, error);
     }
 
-    public JSONArray getBookedHistoryRepetitions(String state, String account){
+    public Pair<JSONArray, String> getBookedHistoryRepetitions(String state, String account){
         Connection conn = null;
         PreparedStatement st = null;
         JSONArray dbBookedHistoryRepetitions = null;
+        String error = null;
 
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -190,10 +196,12 @@ public class DAO {
                     dbBookedHistoryRepetitions.put(innerObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    error = e.getMessage();
                 }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            error = e.getMessage();
         } finally {
             if(conn != null && st != null) {
                 try {
@@ -201,10 +209,11 @@ public class DAO {
                     conn.close();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
+                    error = e.getMessage();
                 }
             }
         }
 
-        return dbBookedHistoryRepetitions;
+        return new Pair<>(dbBookedHistoryRepetitions, error);
     }
 }

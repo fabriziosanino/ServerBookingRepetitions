@@ -56,6 +56,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.15</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>14.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
