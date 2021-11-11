@@ -27,7 +27,24 @@ public class ServletCheckSession extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String type = req.getParameter("type");
+
+        resp.setContentType("text/html");
+        PrintWriter out = resp.getWriter();
+
+        if (type.equals("check_connection_server")) {
+            if (dao.checkConnession())
+                out.println("connected");
+            else
+                out.println("no_connection");
+        }
+        out.flush();
+        out.close();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
         response.setContentType("application/json");
@@ -65,22 +82,6 @@ public class ServletCheckSession extends HttpServlet {
         out.print(jsonObject);
         out.flush();
 
-        out.close();
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        PrintWriter out = resp.getWriter();
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("done", true);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        out.print(jsonObject);
-        out.flush();
         out.close();
     }
 }

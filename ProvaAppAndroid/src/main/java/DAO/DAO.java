@@ -28,6 +28,34 @@ public class DAO {
         }
     }
 
+    public boolean checkConnession(){
+        Connection conn = null;
+        Boolean connected = false;
+        PreparedStatement st = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            String query = "SELECT version()";
+            st = conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery();
+            connected = true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        return connected;
+    }
+
     public int insertClientUser(String account, String pwd, String name, String surname, String role) {
         Connection conn = null;
         PreparedStatement st = null;
