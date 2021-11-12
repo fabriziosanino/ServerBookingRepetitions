@@ -1,7 +1,6 @@
 package com.example.provaappandroid;
 
 import DAO.DAO;
-import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,46 +35,35 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String state = null;
-
-    BufferedReader bufferedReader = request.getReader();
-    String postParameters =  bufferedReader.readLine();
-
-    JSONObject json = null;
-    try {
-      json = new JSONObject(postParameters);
-      state = json.getString("state");
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    HttpSession session = request.getSession();
+    String state = request.getParameter("state");
+    String account = (String) session.getAttribute("account");
 
     response.setContentType("application/json");
     PrintWriter out = response.getWriter();
     JSONObject jsonObject = new JSONObject();
 
-    HttpSession session = request.getSession();
-    String account = (String) session.getAttribute("account");
-
     if(state == null || account == null) {
       try {
         jsonObject.put("done", true);
+        // TODO: restituire risposta che non è loggato o non ha inserito i parametri
       } catch (JSONException e) {
         e.printStackTrace();
       }
     } else {
-      Pair<JSONArray, String> dbValue = dao.getBookedHistoryRepetitions(state, account);
+      JSONArray dbBookedHistoryRepetitions = dao.getBookedHistoryRepetitions(state, account);
 
-      if (dbValue.getKey() != null) {
+      if (dbBookedHistoryRepetitions != null) {
         try {
           jsonObject.put("done", true);
-          jsonObject.put("results", dbValue.getKey());
+          jsonObject.put("results", dbBookedHistoryRepetitions);
         } catch (JSONException e) {
           e.printStackTrace();
         }
       } else {
         try {
           jsonObject.put("done", false);
-          jsonObject.put("error", dbValue.getValue());
+          jsonObject.put("error", "ERROR");
         } catch (JSONException e) {
           e.printStackTrace();
         }

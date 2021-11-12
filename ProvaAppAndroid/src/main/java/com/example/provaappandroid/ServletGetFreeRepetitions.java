@@ -1,7 +1,6 @@
 package com.example.provaappandroid;
 
 import DAO.DAO;
-import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,30 +32,39 @@ public class ServletGetFreeRepetitions extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String day = request.getParameter("day");
-    JSONArray dbBookedRepetitions = dao.getFreeRepetitions(day, "Active");
 
     response.setContentType("application/json");
     PrintWriter out = response.getWriter();
     JSONObject jsonObject = new JSONObject();
 
-    if(dbValue.getKey() != null) {
+    if (day == null) {
       try {
-        jsonObject.put("done", true);
-        jsonObject.put("results", dbValue.getKey());
+        jsonObject.put("done", false);
       } catch (JSONException e) {
         e.printStackTrace();
       }
     } else {
-      try {
-        jsonObject.put("done", false);
-        jsonObject.put("error", dbValue.getValue());
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-    }
+      JSONArray dbBookedRepetitions = dao.getFreeRepetitions(day, "Active");
 
-    out.print(jsonObject);
-    out.flush();
-    out.close();
+      if (dbBookedRepetitions != null) {
+        try {
+          jsonObject.put("done", true);
+          jsonObject.put("results", dbBookedRepetitions);
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      } else {
+        try {
+          jsonObject.put("done", false);
+          jsonObject.put("error", "ERROR");
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+
+      out.print(jsonObject);
+      out.flush();
+      out.close();
+    }
   }
 }

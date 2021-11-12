@@ -34,19 +34,8 @@ public class ServletLogin extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        BufferedReader bufferedReader = request.getReader();
-        String postParameters =  bufferedReader.readLine();
-
-        JSONObject json = null;
-        String account = null;
-        String password = null;
-        try {
-            json = new JSONObject(postParameters);
-            account = json.getString("account");
-            password = json.getString("password");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String account = request.getParameter("account");
+        String password = request.getParameter("password");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

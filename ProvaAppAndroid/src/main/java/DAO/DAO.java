@@ -1,6 +1,5 @@
 package DAO;
 
-import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -214,7 +213,6 @@ public class DAO {
             
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            error = e.getMessage();
         } finally {
             if(conn != null && st != null) {
                 try {
@@ -222,7 +220,6 @@ public class DAO {
                     conn.close();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
-                    error = e.getMessage();
                 }
             }
         }
@@ -246,6 +243,9 @@ public class DAO {
                     courseItem.put("IDCourse", courses.getString("IDCourse"));
 
                     JSONArray teachersList = new JSONArray();
+
+                    if(courseItem.getString("Title").equals("Reti I"))
+                        System.out.println("");
 
                     while(coursesTeachersAss.next()) {
                         if(coursesTeachersAss.getString("IDCourse").equals(courses.getString("IDCourse"))){
@@ -280,5 +280,48 @@ public class DAO {
             }
         }
         return dbFreeRepetitions;
+    }
+
+    public JSONArray getBookedHistoryRepetitions(String state, String account){
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONArray dbBookedHistoryRepetitions = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            String query = "SELECT Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE State = ? and Account = ?;";
+            st = conn.prepareStatement(query);
+            st.setString(1, state);
+            st.setString(2, account);
+            ResultSet rs = st.executeQuery();
+
+            dbBookedHistoryRepetitions = new JSONArray();
+            while (rs.next()) {
+                try {
+                    JSONObject innerObj = new JSONObject();
+                    innerObj.put("day", rs.getString("day"));
+                    innerObj.put("startTime", rs.getString("startTime"));
+                    innerObj.put("IDCourse", rs.getInt("IDCourse"));
+                    innerObj.put("IDTeacher", rs.getInt("IDTeacher"));
+                    dbBookedHistoryRepetitions.put(innerObj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        return dbBookedHistoryRepetitions;
     }
 }
