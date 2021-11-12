@@ -28,44 +28,66 @@ public class ServletRegistration extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String account = request.getParameter("account");
-        String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String surname = request.getParameter("surname");
+        String account = null;
+        String password = null;
+        String name = null;
+        String surname = null;
 
-        HttpSession session = request.getSession();
+        BufferedReader bufferedReader = request.getReader();
+        String postParameters =  bufferedReader.readLine();
 
-        // TODO: parametri query da rivedere, usare injection sql NON hardcoded
-        int result = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
+        JSONObject json = null;
+        try {
+            json = new JSONObject(postParameters);
+            account = json.getString("account");
+            password = json.getString("password");
+            name = json.getString("name");
+            surname = json.getString("surname");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-
         JSONObject jsonObject = new JSONObject();
 
-        if(result == -1){
+        if(account == null || password == null || name == null || surname == null){
             try {
                 jsonObject.put("done", false);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         } else {
-            try {
-                jsonObject.put("done", true);
-                jsonObject.put("account", account);
-                jsonObject.put("pwd", password);
-                jsonObject.put("role", "Client");
-                jsonObject.put("name", name);
-                jsonObject.put("surname", surname);
+            int result = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
 
-                session.setAttribute("account", account);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if (result == -1) {
+                try {
+                    jsonObject.put("done", false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    HttpSession session = request.getSession();
+
+                    jsonObject.put("done", true);
+                    jsonObject.put("account", account);
+                    jsonObject.put("pwd", password);
+                    jsonObject.put("role", "Client");
+                    jsonObject.put("name", name);
+                    jsonObject.put("surname", surname);
+
+                    session.setAttribute("account", account);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         out.print(jsonObject);
         out.flush();
+
+        out.close();
     }
 
     public void destroy() {

@@ -1,7 +1,7 @@
 package com.example.provaappandroid;
 
 import DAO.DAO;
-import DAO.BookedRepetitions;
+import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,16 +39,17 @@ public class ServletGetFreeRepetitions extends HttpServlet {
     PrintWriter out = response.getWriter();
     JSONObject jsonObject = new JSONObject();
 
-    if(dbBookedRepetitions != null) {
+    if(dbValue.getKey() != null) {
       try {
         jsonObject.put("done", true);
-        jsonObject.put("results", dbBookedRepetitions);
+        jsonObject.put("results", dbValue.getKey());
       } catch (JSONException e) {
         e.printStackTrace();
       }
     } else {
       try {
         jsonObject.put("done", false);
+        jsonObject.put("error", dbValue.getValue());
       } catch (JSONException e) {
         e.printStackTrace();
       }
@@ -56,5 +57,6 @@ public class ServletGetFreeRepetitions extends HttpServlet {
 
     out.print(jsonObject);
     out.flush();
+    out.close();
   }
 }
