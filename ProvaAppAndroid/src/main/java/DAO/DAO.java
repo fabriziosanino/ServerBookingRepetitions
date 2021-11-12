@@ -290,7 +290,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "SELECT Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE State = ? and Account = ?;";
+            String query = "SELECT Day, StartTime, Title, Surname, Name FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ? and Account = ?;";
             st = conn.prepareStatement(query);
             st.setString(1, state);
             st.setString(2, account);
@@ -302,8 +302,9 @@ public class DAO {
                     JSONObject innerObj = new JSONObject();
                     innerObj.put("day", rs.getString("day"));
                     innerObj.put("startTime", rs.getString("startTime"));
-                    innerObj.put("IDCourse", rs.getInt("IDCourse"));
-                    innerObj.put("IDTeacher", rs.getInt("IDTeacher"));
+                    innerObj.put("title", rs.getString("Title"));
+                    innerObj.put("surname", rs.getString("Surname"));
+                    innerObj.put("name", rs.getString("Name"));
                     dbBookedHistoryRepetitions.put(innerObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
