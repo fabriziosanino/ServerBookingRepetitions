@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-@WebServlet(name = "ServletGetBookedRepetitions", value = "/servlet-get-booked-repetitions")
-public class ServletGetBookedRepetitions extends HttpServlet {
+@WebServlet(name = "ServletGetFreeRepetitions", value = "/servlet-get-free-repetitions")
+public class ServletGetFreeRepetitions extends HttpServlet {
   private String url;
   private String user;
   private String password;
@@ -32,7 +32,8 @@ public class ServletGetBookedRepetitions extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    JSONArray dbBookedRepetitions = dao.getBookedRepetitions("Active");
+    String day = request.getParameter("day");
+    JSONArray dbBookedRepetitions = dao.getFreeRepetitions(day, "Active");
 
     response.setContentType("application/json");
     PrintWriter out = response.getWriter();
