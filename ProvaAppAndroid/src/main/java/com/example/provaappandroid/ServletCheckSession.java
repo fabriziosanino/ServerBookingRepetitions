@@ -3,6 +3,7 @@ package com.example.provaappandroid;
 import DAO.*;
 import org.json.JSONException;
 import org.json.JSONObject;
+import service.Service;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -27,24 +28,40 @@ public class ServletCheckSession extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String type = req.getParameter("type");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String type = request.getParameter("type");
 
-        resp.setContentType("text/html");
-        PrintWriter out = resp.getWriter();
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        JSONObject jsonObject = new JSONObject();
 
         if (type.equals("check_connection_server")) {
-            if (dao.checkConnession())
-                out.println("connected");
-            else
-                out.println("no_connection");
+            try {
+                jsonObject.put("done", true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if(type.equals("check_connection_db")) {
+            if (dao.checkConnession()) {
+                try {
+                    jsonObject.put("done", true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Service.setError(jsonObject, "no_db_connection");
+            }
         }
+
+        out.print(jsonObject);
         out.flush();
+
         out.close();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //TODO: da controllare i parametri ritornate e i parametri ricevuti in input
         HttpSession session = request.getSession();
 
         response.setContentType("application/json");

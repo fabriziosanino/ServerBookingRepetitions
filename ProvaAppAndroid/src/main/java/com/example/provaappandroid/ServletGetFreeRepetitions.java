@@ -38,28 +38,19 @@ public class ServletGetFreeRepetitions extends HttpServlet {
     JSONObject jsonObject = new JSONObject();
 
     if (day == null) {
-      try {
-        jsonObject.put("done", false);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+      Service.setError(jsonObject, "day not found");
     } else {
-      JSONArray dbBookedRepetitions = dao.getFreeRepetitions(day, "Active");
+      JSONArray dbFreeRepetitions = dao.getFreeRepetitions(day, "Active");
 
-      if (dbBookedRepetitions != null) {
+      if (dbFreeRepetitions != null) {
         try {
           jsonObject.put("done", true);
-          jsonObject.put("results", dbBookedRepetitions);
+          jsonObject.put("results", dbFreeRepetitions);
         } catch (JSONException e) {
           e.printStackTrace();
         }
       } else {
-        try {
-          jsonObject.put("done", false);
-          jsonObject.put("error", "ERROR");
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
+        Service.setError(jsonObject, "free repetitions are empty");
       }
 
       out.print(jsonObject);

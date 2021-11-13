@@ -4,6 +4,7 @@ import DAO.DAO;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import service.Service;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -43,12 +44,7 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
         JSONObject jsonObject = new JSONObject();
 
         if (state == null || account == null) {
-            try {
-                jsonObject.put("done", true);
-                // TODO: restituire risposta che non è loggato o non ha inserito i parametri
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Service.setError(jsonObject, "state or account not found");
         } else {
             JSONArray dbBookedHistoryRepetitions = dao.getBookedHistoryRepetitions(state, account);
 
@@ -60,12 +56,7 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
                     e.printStackTrace();
                 }
             } else {
-                try {
-                    jsonObject.put("done", false);
-                    jsonObject.put("error", "ERROR");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Service.setError(jsonObject, "booked repetions are empty");
             }
         }
 

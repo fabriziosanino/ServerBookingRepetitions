@@ -1,6 +1,8 @@
 package service;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Service {
 
@@ -22,5 +24,14 @@ public class Service {
             return true;
         else
             return false;
+    }
+
+    public static void setError(JSONObject json, String error) {
+        try {
+            json.put("done", false);
+            json.put("error", error);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

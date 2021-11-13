@@ -28,6 +28,8 @@ public class DAO {
         }
     }
 
+    //TODO: tornare al server gli erroi che possono essere avvenuti
+
     public boolean checkConnession(){
         Connection conn = null;
         Boolean connected = false;
@@ -87,9 +89,10 @@ public class DAO {
         return ret;
     }
 
-    public User checkLogin(String account, String pwd) {
+    public JSONObject checkLogin(String account, String pwd) {
         Connection conn = null;
         PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
         User u = null;
 
         try {
@@ -105,7 +108,7 @@ public class DAO {
                 u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Service.setError(jsonObject, e.getMessage());
         } finally {
             if(conn != null && st != null) {
                 try {
@@ -117,7 +120,16 @@ public class DAO {
             }
         }
 
-        return u;
+        try {
+            if(!jsonObject.has("done")) {
+                jsonObject.put("done", true);
+                jsonObject.put("user", u);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
     }
 
     public User checkSession(String account) {

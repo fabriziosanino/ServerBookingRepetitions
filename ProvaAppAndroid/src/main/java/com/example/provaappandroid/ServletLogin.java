@@ -41,34 +41,34 @@ public class ServletLogin extends HttpServlet {
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
-        if(account == null || password == null) {
+        if (account == null || password == null) {
+            Service.setError(jsonObject, "account or password not found");
+        } else {
+            JSONObject json = dao.checkLogin(account, Service.encryptMD5(password));
+
             try {
-                jsonObject.put("done", false);
+                if (json.getBoolean("done")) {
+                    User dbUser = (User) json.get("user");
+                    if (dbUser != null) {
+                        HttpSession session = request.getSession();
+                        try {
+                            jsonObject.put("done", true);
+                            jsonObject.put("account", dbUser.getAccount());
+                            jsonObject.put("name", dbUser.getName());
+                            jsonObject.put("surname", dbUser.getSurname());
+
+                            session.setAttribute("account", dbUser.getAccount());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Service.setError(jsonObject, "user not found");
+                    }
+                } else {
+                    Service.setError(jsonObject, json.getString("error"));
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
-        } else {
-
-            User dbUser = dao.checkLogin(account, Service.encryptMD5(password));
-
-            if (dbUser != null) {
-                HttpSession session = request.getSession();
-                try {
-                    jsonObject.put("done", true);
-                    jsonObject.put("account", dbUser.getAccount());
-                    jsonObject.put("name", dbUser.getName());
-                    jsonObject.put("surname", dbUser.getSurname());
-
-                    session.setAttribute("account", dbUser.getAccount());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    jsonObject.put("done", false);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
         }
 

@@ -33,28 +33,17 @@ public class ServletRegistration extends HttpServlet {
         String name = request.getParameter("name");
         String surname = request.getParameter("surname");
 
-        BufferedReader bufferedReader = request.getReader();
-        String postParameters =  bufferedReader.readLine();
-
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
         if(account == null || password == null || name == null || surname == null){
-            try {
-                jsonObject.put("done", false);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Service.setError(jsonObject, "account, password, name or surname not found");
         } else {
             int result = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
 
             if (result == -1) {
-                try {
-                    jsonObject.put("done", false);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Service.setError(jsonObject, "registration failed");
             } else {
                 try {
                     HttpSession session = request.getSession();
