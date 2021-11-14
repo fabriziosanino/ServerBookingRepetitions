@@ -40,25 +40,29 @@ public class ServletRegistration extends HttpServlet {
         if(account == null || password == null || name == null || surname == null){
             Service.setError(jsonObject, "account, password, name or surname not found");
         } else {
-            int result = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
+            JSONObject json = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
 
-            if (result == -1) {
-                Service.setError(jsonObject, "registration failed");
-            } else {
-                try {
-                    HttpSession session = request.getSession();
+            try {
+                if(json.getBoolean("done")) {
+                    if(json.getInt("inserted") == -1)
+                        Service.setError(jsonObject, "registration failed");
+                    else {
+                        HttpSession session = request.getSession();
 
-                    jsonObject.put("done", true);
-                    jsonObject.put("account", account);
-                    jsonObject.put("pwd", password);
-                    jsonObject.put("role", "Client");
-                    jsonObject.put("name", name);
-                    jsonObject.put("surname", surname);
+                        jsonObject.put("done", true);
+                        jsonObject.put("account", account);
+                        jsonObject.put("pwd", password);
+                        jsonObject.put("role", "Client");
+                        jsonObject.put("name", name);
+                        jsonObject.put("surname", surname);
 
-                    session.setAttribute("account", account);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        session.setAttribute("account", account);
+                    }
+                } else {
+                    Service.setError(jsonObject, json.getString("error"));
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 

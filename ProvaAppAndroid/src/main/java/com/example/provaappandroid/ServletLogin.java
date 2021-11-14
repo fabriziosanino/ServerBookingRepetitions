@@ -13,8 +13,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 @WebServlet(name = "ServletLogin", value = "/servlet-login")
 public class ServletLogin extends HttpServlet {

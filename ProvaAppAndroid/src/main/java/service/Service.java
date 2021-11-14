@@ -4,7 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Service {
+public final class Service {
 
     /*
     *       PASSWORD ACCOUNT DB:

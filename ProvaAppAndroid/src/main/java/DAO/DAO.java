@@ -58,10 +58,11 @@ public class DAO {
         return connected;
     }
 
-    public int insertClientUser(String account, String pwd, String name, String surname, String role) {
+    public JSONObject insertClientUser(String account, String pwd, String name, String surname, String role) {
         Connection conn = null;
         PreparedStatement st = null;
-        int ret = -1;
+        JSONObject jsonObject = new JSONObject();
+
         try {
             conn = DriverManager.getConnection(url, user, password);
 
@@ -72,21 +73,27 @@ public class DAO {
             st.setString(3, name);
             st.setString(4, surname);
             st.setString(5, role);
-            ret = st.executeUpdate();
+
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("inserted", st.executeQuery());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Service.setError(jsonObject, e.getMessage());
         } finally {
             if(conn != null && st != null) {
                 try {
                     st.close();
                     conn.close();
                 } catch (SQLException e) {
-                    System.out.println(e.getMessage());
+                    Service.setError(jsonObject, e.getMessage());
                 }
             }
         }
 
-        return ret;
+        return jsonObject;
     }
 
     public JSONObject checkLogin(String account, String pwd) {
@@ -107,6 +114,13 @@ public class DAO {
             while (rs.next()) {
                 u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
             }
+
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("user", u);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             Service.setError(jsonObject, e.getMessage());
         } finally {
@@ -115,18 +129,9 @@ public class DAO {
                     st.close();
                     conn.close();
                 } catch (SQLException e) {
-                    System.out.println(e.getMessage());
+                    Service.setError(jsonObject, e.getMessage());
                 }
             }
-        }
-
-        try {
-            if(!jsonObject.has("done")) {
-                jsonObject.put("done", true);
-                jsonObject.put("user", u);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
 
         return jsonObject;
@@ -204,10 +209,10 @@ public class DAO {
                   }
                ]
     * */
-    public JSONArray getFreeRepetitions(String day, String state){
+    public JSONObject getFreeRepetitions(String day, String state){
         Connection conn = null;
         PreparedStatement st = null;
-        JSONArray dbFreeRepetitions = null;
+        JSONObject jsonObject = new JSONObject();
 
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -221,22 +226,26 @@ public class DAO {
             st.setString(2, day);
             ResultSet bookedRepetitions = st.executeQuery();
 
-            dbFreeRepetitions = calculateFreeRepetitions(courses, coursesTeachersAss, bookedRepetitions);
-            
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("results", calculateFreeRepetitions(courses, coursesTeachersAss, bookedRepetitions));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Service.setError(jsonObject, e.getMessage());
         } finally {
             if(conn != null && st != null) {
                 try {
                     st.close();
                     conn.close();
                 } catch (SQLException e) {
-                    System.out.println(e.getMessage());
+                    Service.setError(jsonObject, e.getMessage());
                 }
             }
         }
 
-        return dbFreeRepetitions;
+        return jsonObject;
     }
 
     /*
@@ -294,10 +303,11 @@ public class DAO {
         return dbFreeRepetitions;
     }
 
-    public JSONArray getBookedHistoryRepetitions(String state, String account){
+    public JSONObject getBookedHistoryRepetitions(String state, String account){
         Connection conn = null;
         PreparedStatement st = null;
         JSONArray dbBookedHistoryRepetitions = null;
+        JSONObject jsonObject = new JSONObject();
 
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -322,19 +332,26 @@ public class DAO {
                     e.printStackTrace();
                 }
             }
+
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("results", dbBookedHistoryRepetitions);
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Service.setError(jsonObject, e.getMessage());
         } finally {
             if(conn != null && st != null) {
                 try {
                     st.close();
                     conn.close();
                 } catch (SQLException e) {
-                    System.out.println(e.getMessage());
+                    Service.setError(jsonObject, e.getMessage());
                 }
             }
         }
 
-        return dbBookedHistoryRepetitions;
+        return jsonObject;
     }
 }

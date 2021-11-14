@@ -8,13 +8,10 @@ import service.Service;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -46,17 +43,18 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
         if (state == null || account == null) {
             Service.setError(jsonObject, "state or account not found");
         } else {
-            JSONArray dbBookedHistoryRepetitions = dao.getBookedHistoryRepetitions(state, account);
+            JSONObject json = dao.getBookedHistoryRepetitions(state, account);
 
-            if (dbBookedHistoryRepetitions != null) {
-                try {
+            try{
+                if(json.getBoolean("done")){
+                    JSONArray dbBookedHistoryRepetitions = json.getJSONArray("results");
                     jsonObject.put("done", true);
                     jsonObject.put("results", dbBookedHistoryRepetitions);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } else {
+                    Service.setError(jsonObject, json.getString("error"));
                 }
-            } else {
-                Service.setError(jsonObject, "booked repetions are empty");
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 
