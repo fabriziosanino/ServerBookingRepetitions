@@ -44,7 +44,7 @@ public class ServletBookARepetition extends HttpServlet {
     JSONObject jsonObject = new JSONObject();
 
     if (day == null || startTime == null || IDCourse == null || IDTeacher == null || account == null) {
-      Service.setError(jsonObject, "Missing Parameter. Retry.");
+      Service.setError(jsonObject, "day, startTime, IDCourse, IDTeacher or account not found");
     } else {
       JSONObject json = dao.bookRepetition(account, IDTeacher, IDCourse, day, startTime, "Active");
 
