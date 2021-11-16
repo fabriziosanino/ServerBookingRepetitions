@@ -328,7 +328,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "SELECT Day, StartTime, Title, Surname, Name FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ? and Account = ?;";
+            String query = "SELECT Day, StartTime, Title, Surname, Name, r.IDTeacher AS IDTeacher, r.IDCourse AS IDCourse FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ? and Account = ?;";
             st = conn.prepareStatement(query);
             st.setString(1, state);
             st.setString(2, account);
@@ -343,6 +343,8 @@ public class DAO {
                     innerObj.put("title", rs.getString("Title"));
                     innerObj.put("surname", rs.getString("Surname"));
                     innerObj.put("name", rs.getString("Name"));
+                    innerObj.put("idCourse", rs.getInt("IDCourse"));
+                    innerObj.put("idTeacher", rs.getInt("IDTeacher"));
                     dbBookedHistoryRepetitions.put(innerObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -391,10 +393,49 @@ public class DAO {
             try {
                 jsonObject.put("done", true);
                 int res = st.executeUpdate();
+                
                 if(res > 0)
                     jsonObject.put("results", "Repetition Booked Succesfully.");
                 else
                     jsonObject.put("results", "Failed to book the repetition. Try Again.");
+            }catch (SQLException | JSONException e) {
+                Service.setError(jsonObject, e.getMessage());
+            }         
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+        return jsonObject;
+    }
+
+    public JSONObject changeState(String newState, String day, String startTime, int idCourse, int idTeacher, String account) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE Day = ? AND StartTime = ? AND IDCourse = ? AND IDTeacher = ? AND Account = ?");
+            st.setString(1, newState);
+            st.setString(2, day);
+            st.setString(3, startTime);
+            st.setInt(4, idCourse);
+            st.setInt(5, idTeacher);
+            st.setString(6, account);
+
+            st.executeUpdate();
+
+            try {
+                jsonObject.put("done", true);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

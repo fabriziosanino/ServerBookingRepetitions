@@ -75,4 +75,26 @@ public class ServletLogin extends HttpServlet {
 
         out.close();
     }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+
+        session.invalidate();
+
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("done", true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        out.println(jsonObject);
+        out.flush();
+
+        out.close();
+    }
 }
