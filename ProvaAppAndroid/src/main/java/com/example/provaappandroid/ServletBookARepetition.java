@@ -1,20 +1,22 @@
 package com.example.provaappandroid;
 
 import DAO.DAO;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import service.Service;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
-@WebServlet(name = "ServletGetFreeRepetitions", value = "/servlet-get-free-repetitions")
-public class ServletGetFreeRepetitions extends HttpServlet {
+@WebServlet(name = "ServletBookARepetition", value = "/servlet-book-a-repetition")
+public class ServletBookARepetition extends HttpServlet {
   private String url;
   private String user;
   private String password;
@@ -32,23 +34,24 @@ public class ServletGetFreeRepetitions extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String day = request.getParameter("day");
-    String account = "";
-    if(request.getParameter("account") != null)
-      account = request.getParameter("account");
+    String startTime = request.getParameter("startTime");
+    String IDCourse = request.getParameter("IDCourse");
+    String IDTeacher = request.getParameter("IDTeacher");
+    String account = request.getParameter("account");
 
     response.setContentType("application/json");
     PrintWriter out = response.getWriter();
     JSONObject jsonObject = new JSONObject();
 
-    if (day == null) {
-      Service.setError(jsonObject, "day not found");
+    if (day == null || startTime == null || IDCourse == null || IDTeacher == null || account == null) {
+      Service.setError(jsonObject, "Missing Parameter. Retry.");
     } else {
-      JSONObject json = dao.getFreeRepetitions(day, "Active", account);
+      JSONObject json = dao.bookRepetition(account, IDTeacher, IDCourse, day, startTime, "Active");
 
       try {
         if(json.getBoolean("done")) {
           jsonObject.put("done", true);
-          jsonObject.put("results", json.getJSONArray("results"));
+          jsonObject.put("results", json.getString("results"));
         } else {
           Service.setError(jsonObject, json.getString("error"));
         }

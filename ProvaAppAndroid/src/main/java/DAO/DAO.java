@@ -76,6 +76,7 @@ public class DAO {
 
             try {
                 jsonObject.put("done", true);
+                // TODO: ci va un executeUpdate ma non so cosa vuoi ritornare perciò non te l'ho cambiata
                 jsonObject.put("inserted", st.executeQuery());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -209,7 +210,7 @@ public class DAO {
                   }
                ]
     * */
-    public JSONObject getFreeRepetitions(String day, String state){
+    public JSONObject getFreeRepetitions(String day, String state, String account){
         Connection conn = null;
         PreparedStatement st = null;
         JSONObject jsonObject = new JSONObject();
@@ -221,14 +222,14 @@ public class DAO {
             ResultSet courses = st.executeQuery();
             st = conn.prepareStatement("SELECT t.IDCourse, c.Title, t.IDTeacher, tc.Surname, tc.Name FROM teaches as t natural join teachers as tc natural join courses as c;");
             ResultSet coursesTeachersAss = st.executeQuery();
-            st = conn.prepareStatement("SELECT Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE State = ? and Day = ?;");
+            st = conn.prepareStatement("SELECT Account, Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE State = ? and Day = ?;");
             st.setString(1, state);
             st.setString(2, day);
             ResultSet bookedRepetitions = st.executeQuery();
 
             try {
                 jsonObject.put("done", true);
-                jsonObject.put("results", calculateFreeRepetitions(courses, coursesTeachersAss, bookedRepetitions));
+                jsonObject.put("results", calculateFreeRepetitions(courses, coursesTeachersAss, bookedRepetitions, account));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -251,51 +252,66 @@ public class DAO {
     /*
     * This method returns the ALL the free courses and teachers available in a certain hour and day (for all the week)
     * */
-    private JSONArray calculateFreeRepetitions(ResultSet courses, ResultSet coursesTeachersAss, ResultSet bookedRepetitions){
+    private JSONArray calculateFreeRepetitions(ResultSet courses, ResultSet coursesTeachersAss, ResultSet bookedRepetitions, String account){
         JSONArray dbFreeRepetitions = new JSONArray();
 
         for (int j=15; j<19; j++){ //for every hour
             try{
-                JSONArray coursesList = new JSONArray();
+                boolean hasAnotherRepetitionBooked = false;
+                if(!account.equals("")){
+                    while(bookedRepetitions.next() && !hasAnotherRepetitionBooked) {
+                        String [] hour = bookedRepetitions.getString("startTime").split(":");
+                        if (bookedRepetitions.getString("Account").equals(account) && String.valueOf(j).equals(hour[0]))
+                            hasAnotherRepetitionBooked = true;
+                    }
+                    bookedRepetitions.beforeFirst();
+                }
 
-                while(courses.next()){
-                    JSONObject courseItem = new JSONObject();
-                    courseItem.put("Title", courses.getString("Title"));
-                    courseItem.put("IDCourse", courses.getString("IDCourse"));
+                if(!hasAnotherRepetitionBooked){
+                    JSONArray coursesList = new JSONArray();
 
-                    JSONArray teachersList = new JSONArray();
+                    while(courses.next()){
+                        JSONObject courseItem = new JSONObject();
+                        courseItem.put("Title", courses.getString("Title"));
+                        courseItem.put("IDCourse", courses.getString("IDCourse"));
 
-                    if(courseItem.getString("Title").equals("Reti I"))
-                        System.out.println("");
+                        JSONArray teachersList = new JSONArray();
 
-                    while(coursesTeachersAss.next()) {
-                        if(coursesTeachersAss.getString("IDCourse").equals(courses.getString("IDCourse"))){
-                            boolean isBooked=false;
-                            while(bookedRepetitions.next() && !isBooked){
-                                String [] atHour = bookedRepetitions.getString("startTime").split(":");
-                                if(String.valueOf(j).equals(atHour[0]) && coursesTeachersAss.getString("IDCourse").equals(bookedRepetitions.getString("IDCourse")) && coursesTeachersAss.getString("IDTeacher").equals(bookedRepetitions.getString("IDTeacher")))
-                                    isBooked=true;
+                        if(courseItem.getString("Title").equals("Reti I"))
+                            System.out.println("");
+
+                        while(coursesTeachersAss.next()) {
+                            if(coursesTeachersAss.getString("IDCourse").equals(courses.getString("IDCourse"))){
+                                boolean isBooked=false;
+                                while(bookedRepetitions.next() && !isBooked){
+                                    String [] atHour = bookedRepetitions.getString("startTime").split(":");
+                                    if(String.valueOf(j).equals(atHour[0]) && coursesTeachersAss.getString("IDCourse").equals(bookedRepetitions.getString("IDCourse")) && coursesTeachersAss.getString("IDTeacher").equals(bookedRepetitions.getString("IDTeacher")))
+                                        isBooked=true;
+                                }
+                                if(!isBooked){
+                                    JSONObject teacherItem = new JSONObject();
+                                    teacherItem.put("Surname", coursesTeachersAss.getString("Surname"));
+                                    teacherItem.put("Name", coursesTeachersAss.getString("Name"));
+                                    teacherItem.put("IDTeacher", coursesTeachersAss.getInt("IDTeacher"));
+                                    teachersList.put(teacherItem);
+                                }
+                                bookedRepetitions.beforeFirst();
                             }
-                            if(!isBooked){
-                                JSONObject teacherItem = new JSONObject();
-                                teacherItem.put("Surname", coursesTeachersAss.getString("Surname"));
-                                teacherItem.put("Name", coursesTeachersAss.getString("Name"));
-                                teacherItem.put("IDTeacher", coursesTeachersAss.getInt("IDTeacher"));
-                                teachersList.put(teacherItem);
-                            }
-                            bookedRepetitions.beforeFirst();
+                        }
+                        coursesTeachersAss.beforeFirst();
+                        courseItem.put("teachersList", teachersList);
+                        if(teachersList.length() > 0){
+                            coursesList.put(courseItem);
                         }
                     }
-                    coursesTeachersAss.beforeFirst();
-                    courseItem.put("teachersList", teachersList);
-                    coursesList.put(courseItem);
+                    JSONObject innerObj = new JSONObject();
+                    String onHour =  String.valueOf(j).concat(":00");
+                    innerObj.put("startTime", onHour);
+                    innerObj.put("coursesList", coursesList);
+                    dbFreeRepetitions.put(innerObj);
+                    courses.beforeFirst();
                 }
-                JSONObject innerObj = new JSONObject();
-                String onHour =  String.valueOf(j).concat(":00");
-                innerObj.put("startTime", onHour);
-                innerObj.put("coursesList", coursesList);
-                dbFreeRepetitions.put(innerObj);
-                courses.beforeFirst();
+
             }catch (SQLException | JSONException e){
                 System.out.println(e.getMessage());
             }
@@ -337,6 +353,49 @@ public class DAO {
                 jsonObject.put("done", true);
                 jsonObject.put("results", dbBookedHistoryRepetitions);
             } catch (JSONException e){
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject bookRepetition(String account, String IDTeacher, String IDCourse, String day, String startTime, String state) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            String query = "INSERT INTO repetitions VALUES(?, ?, ?, ?, ?, ?);";
+            st = conn.prepareStatement(query);
+            st.setString(1, day);
+            st.setString(2, startTime);
+            st.setInt(3, Integer.parseInt(IDCourse));
+            st.setInt(4, Integer.parseInt(IDTeacher));
+            st.setString(5, account);
+            st.setString(6, state);
+
+            try {
+                jsonObject.put("done", true);
+                int res = st.executeUpdate();
+                if(res > 0)
+                    jsonObject.put("results", "Repetition Booked Succesfully.");
+                else
+                    jsonObject.put("results", "Failed to book the repetition. Try Again.");
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         } catch (SQLException e) {
