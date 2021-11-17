@@ -7,19 +7,18 @@ public class User {
     String name;
     String surname;
 
-    //user used for Registration
+    public User(){
+        this.account = "";
+        this.pwd = "";
+        this.role = "";
+        this.name = "";
+        this.surname = "";
+    }
+
     public User(String account, String pwd, String role, String name, String surname) {
         this.account = account;
         this.pwd = pwd;
         this.role = role;
-        this.name = name;
-        this.surname = surname;
-    }
-
-    //user used for Login
-    public User(String account, String pwd, String name, String surname) {
-        this.account = account;
-        this.pwd = pwd;
         this.name = name;
         this.surname = surname;
     }

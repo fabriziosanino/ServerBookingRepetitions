@@ -101,7 +101,7 @@ public class DAO {
         Connection conn = null;
         PreparedStatement st = null;
         JSONObject jsonObject = new JSONObject();
-        User u = null;
+        User u = new User();
 
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -113,7 +113,7 @@ public class DAO {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
+                u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Role"), rs.getString("Name"), rs.getString("Surname"));
             }
 
             try {
@@ -152,7 +152,7 @@ public class DAO {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
+                u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Role"), rs.getString("Name"), rs.getString("Surname"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

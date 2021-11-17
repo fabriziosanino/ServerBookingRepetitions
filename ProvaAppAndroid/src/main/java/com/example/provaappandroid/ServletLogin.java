@@ -47,7 +47,8 @@ public class ServletLogin extends HttpServlet {
             try {
                 if (json.getBoolean("done")) {
                     User dbUser = (User) json.get("user");
-                    if (dbUser != null) {
+                    if (!dbUser.getAccount().equals("") && !dbUser.getName().equals("") && !dbUser.getSurname().equals("") && !dbUser.getPwd().equals("") && !dbUser.getRole().equals("")) {
+
                         HttpSession session = request.getSession();
                         try {
                             jsonObject.put("done", true);
