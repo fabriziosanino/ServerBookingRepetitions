@@ -54,6 +54,9 @@ public class ServletLogin extends HttpServlet {
                             jsonObject.put("account", dbUser.getAccount());
                             jsonObject.put("name", dbUser.getName());
                             jsonObject.put("surname", dbUser.getSurname());
+                            jsonObject.put("token", session.getId());
+
+                            System.out.println("LOGIN" + session.getId());
 
                             session.setAttribute("account", dbUser.getAccount());
                         } catch (JSONException e) {

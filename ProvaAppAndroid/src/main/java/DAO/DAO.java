@@ -138,10 +138,11 @@ public class DAO {
         return jsonObject;
     }
 
-    public User checkSession(String account) {
+    public JSONObject checkSession(String account) {
         Connection conn = null;
         PreparedStatement st = null;
         User u = null;
+        JSONObject jsonObject = new JSONObject();
 
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -151,23 +152,29 @@ public class DAO {
             st.setString(1, account);
             ResultSet rs = st.executeQuery();
 
-            while (rs.next()) {
-                u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
+            rs.next();
+            u = new User(rs.getString("Account"), rs.getString("Pwd"), rs.getString("Name"), rs.getString("Surname"));
+
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("result", u);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Service.setError(jsonObject, e.getMessage());
         } finally {
             if(conn != null && st != null) {
                 try {
                     st.close();
                     conn.close();
                 } catch (SQLException e) {
-                    System.out.println(e.getMessage());
+                    Service.setError(jsonObject, e.getMessage());
                 }
             }
         }
 
-        return u;
+        return jsonObject;
     }
 
     /*

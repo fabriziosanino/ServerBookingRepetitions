@@ -35,22 +35,26 @@ public class ServletCheckSession extends HttpServlet {
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
-        if (type.equals("check_connection_server")) {
-            try {
-                jsonObject.put("done", true);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if(type.equals("check_connection_db")) {
-            if (dao.checkConnession()) {
+        if(type != null) {
+            if (type.equals("check_connection_server")) {
                 try {
                     jsonObject.put("done", true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            } else {
-                Service.setError(jsonObject, "no_db_connection");
+            } else if (type.equals("check_connection_db")) {
+                if (dao.checkConnession()) {
+                    try {
+                        jsonObject.put("done", true);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Service.setError(jsonObject, "no_db_connection");
+                }
             }
+        } else {
+            Service.setError(jsonObject, "type not found");
         }
 
         out.print(jsonObject);
@@ -61,39 +65,42 @@ public class ServletCheckSession extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //TODO: da controllare i parametri ritornate e i parametri ricevuti in input
-        HttpSession session = request.getSession();
+        //TODO: controllare la sessione prima di fare ogni cosa nella servlet
+         HttpSession session = request.getSession();
+
+        String sessionTokenPassed = request.getParameter("sessionToken");
+        String sessionToken = session.getId();
+
+        System.out.println(sessionToken);
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
-        if (!session.isNew()) {
+        if(sessionTokenPassed != null && sessionTokenPassed.equals(sessionToken)) {
             if (session.getAttribute("account") != null) {
                 String account = session.getAttribute("account").toString();
-                User dbUser = dao.checkSession(account);
+                JSONObject json = dao.checkSession(account);
 
                 try {
-                    jsonObject.put("done", true);
-                    jsonObject.put("account", account);
-                    jsonObject.put("name", dbUser.getName());
-                    jsonObject.put("surname", dbUser.getSurname());
+                    if (json.getBoolean("done")) {
+                        User u = (User) json.get("result");
+                        jsonObject.put("done", true);
+                        jsonObject.put("account", u.getAccount());
+                        jsonObject.put("name", u.getName());
+                        jsonObject.put("surname", u.getSurname());
+                        jsonObject.put("token", sessionToken);
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             } else {
-                try {
-                    jsonObject.put("done", false);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Service.setError(jsonObject, "no session");
             }
         } else {
-            try {
-                jsonObject.put("done", false);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Service.setError(jsonObject, "no session");
         }
 
         out.print(jsonObject);
