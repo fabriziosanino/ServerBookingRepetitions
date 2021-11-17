@@ -76,8 +76,8 @@ public class DAO {
 
             try {
                 jsonObject.put("done", true);
-                // TODO: ci va un executeUpdate ma non so cosa vuoi ritornare perciò non te l'ho cambiata
-                jsonObject.put("inserted", st.executeQuery());
+                int res = st.executeUpdate();
+                jsonObject.put("inserted", res);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
