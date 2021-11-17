@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -35,27 +36,34 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String state = request.getParameter("state");
         String account = request.getParameter("account");
+        String token = request.getParameter("sessionToken");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
-        if (state == null || account == null) {
-            Service.setError(jsonObject, "state or account not found");
-        } else {
-            JSONObject json = dao.getBookedHistoryRepetitions(state, account);
+        HttpSession session = request.getSession(false);
 
-            try{
-                if(json.getBoolean("done")){
-                    JSONArray dbBookedHistoryRepetitions = json.getJSONArray("results");
-                    jsonObject.put("done", true);
-                    jsonObject.put("results", dbBookedHistoryRepetitions);
-                } else {
-                    Service.setError(jsonObject, json.getString("error"));
+        if(session != null && session.getId().equals(token)) {
+            if (state == null || account == null) {
+                Service.setError(jsonObject, "state or account not found");
+            } else {
+                JSONObject json = dao.getBookedHistoryRepetitions(state, account);
+
+                try {
+                    if (json.getBoolean("done")) {
+                        JSONArray dbBookedHistoryRepetitions = json.getJSONArray("results");
+                        jsonObject.put("done", true);
+                        jsonObject.put("results", dbBookedHistoryRepetitions);
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+        } else {
+            Service.setError(jsonObject, "no session");
         }
 
         out.print(jsonObject);

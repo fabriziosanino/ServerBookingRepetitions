@@ -37,24 +37,32 @@ public class ServletManageRepetitions extends HttpServlet {
         int idCourse = Integer.valueOf(request.getParameter("idCourse"));
         String account = request.getParameter("account");
 
+        String token = request.getParameter("sessionToken");
+
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
-        if (newState == null) {
-            Service.setError(jsonObject, "state not found");
-        } else {
-            JSONObject json = dao.changeState(newState, day, startTime, idCourse, idTeacher, account);
+        HttpSession session = request.getSession(false);
 
-            try{
-                if(json.getBoolean("done")){
-                    jsonObject.put("done", true);
-                } else {
-                    Service.setError(jsonObject, json.getString("error"));
+        if(session != null && session.getId().equals(token)) {
+            if (newState == null) {
+                Service.setError(jsonObject, "state not found");
+            } else {
+                JSONObject json = dao.changeState(newState, day, startTime, idCourse, idTeacher, account);
+
+                try {
+                    if (json.getBoolean("done")) {
+                        jsonObject.put("done", true);
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+        } else {
+            Service.setError(jsonObject, "no session");
         }
 
         out.print(jsonObject);
