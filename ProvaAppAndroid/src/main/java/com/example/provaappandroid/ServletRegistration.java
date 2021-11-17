@@ -55,6 +55,7 @@ public class ServletRegistration extends HttpServlet {
                         jsonObject.put("role", "Client");
                         jsonObject.put("name", name);
                         jsonObject.put("surname", surname);
+                        jsonObject.put("token", session.getId());
 
                         session.setAttribute("account", account);
                     }
