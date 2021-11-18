@@ -28,8 +28,6 @@ public class DAO {
         }
     }
 
-    //TODO: tornare al server gli erroi che possono essere avvenuti
-
     public boolean checkConnession(){
         Connection conn = null;
         Boolean connected = false;

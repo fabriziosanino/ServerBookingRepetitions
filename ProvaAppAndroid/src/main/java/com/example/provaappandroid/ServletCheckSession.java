@@ -65,7 +65,6 @@ public class ServletCheckSession extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //TODO: controllare la sessione prima di fare ogni cosa nella servlet
         HttpSession session = request.getSession(false);
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
