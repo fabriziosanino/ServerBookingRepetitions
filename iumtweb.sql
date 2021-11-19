@@ -80,21 +80,22 @@ INSERT INTO iumtweb.Teaches VALUES (8,2);
 INSERT INTO iumtweb.Teaches VALUES (8,4);
 INSERT INTO iumtweb.Teaches VALUES (8,5);
 CREATE TABLE iumtweb.Repetitions(
+    IDRepetition MEDIUMINT NOT NULL AUTO_INCREMENT,
     Day VARCHAR(20) NOT NULL CHECK (Day='Monday' OR Day='Tuesday' OR Day='Wednesday' OR Day='Thursday' OR Day='Friday'),
     StartTime VARCHAR(10) NOT NULL CHECK (StartTime='15:00' OR StartTime='16:00' OR StartTime='17:00' OR StartTime='18:00' OR StartTime='19:00'),
     IDCourse MEDIUMINT NOT NULL,
     IDTeacher MEDIUMINT NOT NULL,
     Account VARCHAR(50) NOT NULL,
     State VARCHAR(10) NOT NULL CHECK (State='Active' OR State='Cancelled' OR State='Done'),
-    PRIMARY KEY (Day, StartTime, IDCourse, IDTeacher, Account, State),
+    PRIMARY KEY (IDRepetition),
     FOREIGN KEY (IDTeacher, IDCourse) REFERENCES Teaches(IDTeacher, IDCourse) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (Account) REFERENCES Users(Account) ON UPDATE CASCADE ON DELETE CASCADE
 );
-INSERT INTO iumtweb.Repetitions VALUES ("Monday", "15:00", 6, 2, "client1@email.com", "Active");
-INSERT INTO iumtweb.Repetitions VALUES ("Monday", "17:00", 5, 5, "client1@email.com", "Active");
-INSERT INTO iumtweb.Repetitions VALUES ("Thursday", "18:00", 4, 4, "client1@email.com", "Done");
-INSERT INTO iumtweb.Repetitions VALUES ("Wednesday", "16:00", 7, 3, "client1@email.com", "Cancelled");
-INSERT INTO iumtweb.Repetitions VALUES ("Tuesday", "15:00", 2, 4, "client1@email.com", "Done");
-INSERT INTO iumtweb.Repetitions VALUES ("Monday", "16:00", 1, 8, "client2@email.com", "Active");
-INSERT INTO iumtweb.Repetitions VALUES ("Wednesday", "17:00", 3, 4, "client2@email.com", "Active");
-INSERT INTO iumtweb.Repetitions VALUES ("Friday", "19:00", 6, 2, "client2@email.com", "Cancelled");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Monday", "15:00", 6, 2, "client1@email.com", "Active");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Monday", "17:00", 5, 5, "client1@email.com", "Active");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Thursday", "18:00", 4, 4, "client1@email.com", "Done");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Wednesday", "16:00", 7, 3, "client1@email.com", "Cancelled");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Tuesday", "15:00", 2, 4, "client1@email.com", "Done");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Monday", "16:00", 1, 8, "client2@email.com", "Active");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Wednesday", "17:00", 3, 4, "client2@email.com", "Active");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Friday", "19:00", 6, 2, "client2@email.com", "Cancelled");

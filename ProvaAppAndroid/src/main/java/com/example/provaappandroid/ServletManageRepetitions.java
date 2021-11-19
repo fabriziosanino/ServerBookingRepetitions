@@ -31,11 +31,7 @@ public class ServletManageRepetitions extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String newState = request.getParameter("newState");
-        String day = request.getParameter("day");
-        String startTime = request.getParameter("startTime");
-        int idTeacher = Integer.valueOf(request.getParameter("idTeacher"));
-        int idCourse = Integer.valueOf(request.getParameter("idCourse"));
-        String account = request.getParameter("account");
+        String IDRepetition = request.getParameter("IDRepetition");
 
         String token = request.getParameter("sessionToken");
 
@@ -49,7 +45,7 @@ public class ServletManageRepetitions extends HttpServlet {
             if (newState == null) {
                 Service.setError(jsonObject, "state not found");
             } else {
-                JSONObject json = dao.changeState(newState, day, startTime, idCourse, idTeacher, account);
+                JSONObject json = dao.changeState(IDRepetition, newState);
 
                 try {
                     if (json.getBoolean("done")) {

@@ -333,7 +333,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "SELECT Day, StartTime, Title, Surname, Name, r.IDTeacher AS IDTeacher, r.IDCourse AS IDCourse FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ? and Account = ?;";
+            String query = "SELECT IDRepetition, Day, StartTime, Title, Surname, Name, r.IDTeacher AS IDTeacher, r.IDCourse AS IDCourse FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ? and Account = ?;";
             st = conn.prepareStatement(query);
             st.setString(1, state);
             st.setString(2, account);
@@ -343,6 +343,7 @@ public class DAO {
             while (rs.next()) {
                 try {
                     JSONObject innerObj = new JSONObject();
+                    innerObj.put("IDRepetition", rs.getString("IDRepetition"));
                     innerObj.put("day", rs.getString("day"));
                     innerObj.put("startTime", rs.getString("startTime"));
                     innerObj.put("title", rs.getString("Title"));
@@ -386,7 +387,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "INSERT INTO repetitions VALUES(?, ?, ?, ?, ?, ?);";
+            String query = "INSERT INTO repetitions VALUES(NULL, ?, ?, ?, ?, ?, ?);";
             st = conn.prepareStatement(query);
             st.setString(1, day);
             st.setString(2, startTime);
@@ -421,7 +422,7 @@ public class DAO {
         return jsonObject;
     }
 
-    public JSONObject changeState(String newState, String day, String startTime, int idCourse, int idTeacher, String account) {
+    public JSONObject changeState(String IDRepetition, String state) {
         Connection conn = null;
         PreparedStatement st = null;
         JSONObject jsonObject = new JSONObject();
@@ -429,14 +430,9 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE Day = ? AND StartTime = ? AND IDCourse = ? AND IDTeacher = ? AND Account = ?");
-            st.setString(1, newState);
-            st.setString(2, day);
-            st.setString(3, startTime);
-            st.setInt(4, idCourse);
-            st.setInt(5, idTeacher);
-            st.setString(6, account);
-
+            st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE IDRepetition=?;");
+            st.setString(1, state);
+            st.setString(2, IDRepetition);
             st.executeUpdate();
 
             try {
