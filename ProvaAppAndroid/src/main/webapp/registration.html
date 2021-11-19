@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div id="login" >
+  <h3 class="text-center text-white pt-5">Login form</h3>
+  <div class="container">
+    <div id="login-row" class="row justify-content-center align-items-center">
+      <div id="login-column" style="border: #adacac 1px solid;
+    padding: 5%;
+    border-radius: 5%;" class="col-md-6">
+        <div id="login-box" class="col-md-12">
+          <form id="login-form" class="form" action="index.html" method="post">
+            <h1 class="text-center text-info "  style="margin-bottom: 0!important;">REGISTRATION</h1>
+            <h5 class="text-center"  style="color:#aaa!important; ">sign up to continue</h5><br>
+            <div class="form-group">
+              <!-- <label for="username" class="text-info">Username:</label><br>-->
+              <input type="text" placeholder="surname" name="surname" id="surname" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="text" placeholder="name" name="name" id="name" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="email" placeholder="email" name="email" id="email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="password"  name="password" id="password" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="confirm password"  name="password" id="confpassword" class="form-control">
+            </div>
+            <div id="register-link" class="text-right">
+              <a href="login.html" class="text-info">Back to login</a>
+            </div>
+
+            <div class="form-group">
+              <input id="log" type="submit" name="submit"  class="btn btn-info btn-md" value="SIGN UP">
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
