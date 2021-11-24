@@ -29,11 +29,22 @@ public class ServletManageRepetitions extends HttpServlet {
     }
 
     @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+        super.doOptions(request, response);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String newState = request.getParameter("newState");
         String IDRepetition = request.getParameter("IDRepetition");
 
         String token = request.getParameter("sessionToken");
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

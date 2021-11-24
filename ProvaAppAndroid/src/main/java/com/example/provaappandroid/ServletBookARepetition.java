@@ -33,6 +33,15 @@ public class ServletBookARepetition extends HttpServlet {
     }
 
     @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+        super.doOptions(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String day = request.getParameter("day");
         String startTime = request.getParameter("startTime");
@@ -41,6 +50,8 @@ public class ServletBookARepetition extends HttpServlet {
         String account = request.getParameter("account");
 
         String token = request.getParameter("sessionToken");
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

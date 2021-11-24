@@ -7,6 +7,7 @@ import service.Service;
 import java.io.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
@@ -27,11 +28,22 @@ public class ServletRegistration extends HttpServlet {
         dao.registerDriver();
     }
 
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+        super.doOptions(request, response);
+    }
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String account = request.getParameter("account");
         String password = request.getParameter("password");
         String name = request.getParameter("name");
         String surname = request.getParameter("surname");
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
