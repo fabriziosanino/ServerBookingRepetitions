@@ -1,23 +1,19 @@
-package com.example.provaappandroid;
+package serlvets;
 
 import DAO.DAO;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import service.Service;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "ServletBookARepetition", value = "/servlet-book-a-repetition")
-public class ServletBookARepetition extends HttpServlet {
+@WebServlet(name = "ServletManageRepetitions", value = "/servlet-manage-repetitions")
+public class ServletManageRepetitions extends HttpServlet {
     private String url;
     private String user;
     private String password;
@@ -42,12 +38,9 @@ public class ServletBookARepetition extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String day = request.getParameter("day");
-        String startTime = request.getParameter("startTime");
-        String IDCourse = request.getParameter("IDCourse");
-        String IDTeacher = request.getParameter("IDTeacher");
-        String account = request.getParameter("account");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String newState = request.getParameter("newState");
+        String IDRepetition = request.getParameter("IDRepetition");
 
         String token = request.getParameter("sessionToken");
 
@@ -59,23 +52,21 @@ public class ServletBookARepetition extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        if (session != null && session.getId().equals(token)) {
-            if (day == null || startTime == null || IDCourse == null || IDTeacher == null || account == null) {
-                Service.setError(jsonObject, "day, startTime, IDCourse, IDTeacher or account not found");
+        if(session != null && session.getId().equals(token)) {
+            if (newState == null) {
+                Service.setError(jsonObject, "state not found");
             } else {
-                JSONObject json = dao.bookRepetition(account, IDTeacher, IDCourse, day, startTime, "Active");
+                JSONObject json = dao.changeState(IDRepetition, newState);
 
                 try {
                     if (json.getBoolean("done")) {
                         jsonObject.put("done", true);
-                        jsonObject.put("results", json.getString("results"));
                     } else {
                         Service.setError(jsonObject, json.getString("error"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         } else {
             Service.setError(jsonObject, "no session");

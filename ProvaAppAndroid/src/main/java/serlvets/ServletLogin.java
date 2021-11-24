@@ -1,19 +1,21 @@
-package com.example.provaappandroid;
+package serlvets;
 
 import DAO.DAO;
-import org.json.*;
+import DAO.User;
+import org.json.JSONException;
+import org.json.JSONObject;
 import service.Service;
 
-import java.io.*;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-@WebServlet(name = "ServletRegistration", value = "/servlet-registration")
-public class ServletRegistration extends HttpServlet {
-
+@WebServlet(name = "ServletLogin", value = "/servlet-login")
+public class ServletLogin extends HttpServlet {
     private String url;
     private String user;
     private String password;
@@ -37,11 +39,10 @@ public class ServletRegistration extends HttpServlet {
         super.doOptions(request, response);
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String account = request.getParameter("account");
         String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String surname = request.getParameter("surname");
 
         response.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -49,27 +50,31 @@ public class ServletRegistration extends HttpServlet {
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
-        if(account == null || password == null || name == null || surname == null){
-            Service.setError(jsonObject, "account, password, name or surname not found");
+        if (account == null || password == null) {
+            Service.setError(jsonObject, "account or password not found");
         } else {
-            JSONObject json = dao.insertClientUser(account, Service.encryptMD5(password), name, surname, "Client");
+            JSONObject json = dao.checkLogin(account, Service.encryptMD5(password));
 
             try {
-                if(json.getBoolean("done")) {
-                    if(json.getInt("inserted") == -1)
-                        Service.setError(jsonObject, "registration failed");
-                    else {
+                if (json.getBoolean("done")) {
+                    User dbUser = (User) json.get("user");
+                    if (!dbUser.getAccount().equals("") && !dbUser.getName().equals("") && !dbUser.getSurname().equals("") && !dbUser.getPwd().equals("") && !dbUser.getRole().equals("")) {
+
                         HttpSession session = request.getSession();
+                        try {
+                            jsonObject.put("done", true);
+                            jsonObject.put("account", dbUser.getAccount());
+                            jsonObject.put("name", dbUser.getName());
+                            jsonObject.put("surname", dbUser.getSurname());
+                            jsonObject.put("role", dbUser.getRole());
+                            jsonObject.put("token", session.getId());
 
-                        jsonObject.put("done", true);
-                        jsonObject.put("account", account);
-                        jsonObject.put("pwd", password);
-                        jsonObject.put("role", "Client");
-                        jsonObject.put("name", name);
-                        jsonObject.put("surname", surname);
-                        jsonObject.put("token", session.getId());
-
-                        session.setAttribute("account", account);
+                            session.setAttribute("account", dbUser.getAccount());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Service.setError(jsonObject, "user not found");
                     }
                 } else {
                     Service.setError(jsonObject, json.getString("error"));
@@ -83,8 +88,5 @@ public class ServletRegistration extends HttpServlet {
         out.flush();
 
         out.close();
-    }
-
-    public void destroy() {
     }
 }

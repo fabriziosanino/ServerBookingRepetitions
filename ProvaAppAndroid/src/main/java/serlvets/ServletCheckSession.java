@@ -1,4 +1,4 @@
-package com.example.provaappandroid;
+package serlvets;
 
 import DAO.*;
 import org.json.JSONException;
@@ -99,6 +99,7 @@ public class ServletCheckSession extends HttpServlet {
                             jsonObject.put("account", u.getAccount());
                             jsonObject.put("name", u.getName());
                             jsonObject.put("surname", u.getSurname());
+                            jsonObject.put("role", u.getRole());
                             jsonObject.put("token", sessionToken);
                         } else {
                             Service.setError(jsonObject, json.getString("error"));
