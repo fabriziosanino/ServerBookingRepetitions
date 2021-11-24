@@ -1,4 +1,4 @@
-package com.example.provaappandroid;
+package serlvets;
 
 import DAO.DAO;
 import org.json.JSONArray;
