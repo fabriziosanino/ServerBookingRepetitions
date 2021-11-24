@@ -215,6 +215,165 @@ public class DAO {
                   }
                ]
     * */
+
+    public JSONObject getCourses() {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray courses = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            st = conn.prepareStatement("SELECT IDCourse, Title FROM courses;");
+            ResultSet rs = st.executeQuery();
+
+            courses = new JSONArray();
+
+            while (rs.next()) {
+                try {
+                    JSONObject innerObj = new JSONObject();
+                    innerObj.put("IDCourse", rs.getInt("IDCourse"));
+                    innerObj.put("Title", rs.getString("Title"));
+                    courses.put(innerObj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("results", courses);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject deleteCourse(int idCourse) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            st = conn.prepareStatement("DELETE FROM courses WHERE IDCourse = ?;");
+            st.setInt(1, idCourse);
+            st.executeUpdate();
+
+            try {
+                jsonObject.put("done", true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject getTeachers() {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray teachers = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            st = conn.prepareStatement("SELECT IDTeacher, Mail, Surname, Name FROM teachers;");
+            ResultSet rs = st.executeQuery();
+
+            teachers = new JSONArray();
+
+            while (rs.next()) {
+                try {
+                    JSONObject innerObj = new JSONObject();
+                    innerObj.put("IDTeacher", rs.getInt("IDTeacher"));
+                    innerObj.put("Mail", rs.getString("Mail"));
+                    innerObj.put("Surname", rs.getString("Surname"));
+                    innerObj.put("Name", rs.getString("Name"));
+                    teachers.put(innerObj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("results", teachers);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject deleteTeacher(int idTeacher) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            st = conn.prepareStatement("DELETE FROM teachers WHERE IDTeacher = ?;");
+            st.setInt(1, idTeacher);
+            st.executeUpdate();
+
+            try {
+                jsonObject.put("done", true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
     public JSONObject getFreeRepetitions(String day, String state, String account){
         Connection conn = null;
         PreparedStatement st = null;
@@ -253,6 +412,8 @@ public class DAO {
 
         return jsonObject;
     }
+
+    //TODO: controllare le chiusure di connessione nelle finally
 
     /*
     * This method returns the ALL the free courses and teachers available in a certain hour and day (for all the week)
