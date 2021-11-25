@@ -341,7 +341,7 @@ public class DAO {
 
         try {
             conn = DriverManager.getConnection(url, user, password);
-            st = conn.prepareStatement("SELECT IDTeacher, IDCourse FROM teaches;");
+            st = conn.prepareStatement("SELECT teachers.IDTeacher, courses.IDCourse, courses.Title, teachers.Name, teachers.Surname FROM teachers JOIN (teaches JOIN courses ON teaches.IDCourse = courses.IDCourse) ON teachers.IDTeacher = teaches.IDTeacher;");
             ResultSet rs = st.executeQuery();
 
             teaches = new JSONArray();
@@ -349,8 +349,11 @@ public class DAO {
             while (rs.next()) {
                 try {
                     JSONObject innerObj = new JSONObject();
-                    innerObj.put("IDTeacher", rs.getInt("IDTeacher"));
-                    innerObj.put("IDCourse", rs.getInt("IDCourse"));
+                    innerObj.put("Title", rs.getString("Title"));
+                    innerObj.put("Name", rs.getString("Name"));
+                    innerObj.put("Surname", rs.getString("Surname"));
+                    innerObj.put("IDTeacher", rs.getString("IDTeacher"));
+                    innerObj.put("IDCourse", rs.getString("IDCourse"));
                     teaches.put(innerObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -423,6 +426,79 @@ public class DAO {
             String query = "INSERT INTO courses VALUES(NULL, ?);";
             st = conn.prepareStatement(query);
             st.setString(1, title);
+
+            try {
+                jsonObject.put("done", true);
+                int res = st.executeUpdate();
+                jsonObject.put("inserted", res);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject insertTeacher(String mail, String surname, String name) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            String query = "INSERT INTO teachers VALUES(NULL, ?, ?, ?);";
+            st = conn.prepareStatement(query);
+            st.setString(1, mail);
+            st.setString(2, surname);
+            st.setString(3, name);
+
+            try {
+                jsonObject.put("done", true);
+                int res = st.executeUpdate();
+                jsonObject.put("inserted", res);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject insertTeach(int idTeacher, int idCourse) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            String query = "INSERT INTO teaches VALUES(?, ?);";
+            st = conn.prepareStatement(query);
+            st.setInt(1, idTeacher);
+            st.setInt(2, idCourse);
 
             try {
                 jsonObject.put("done", true);

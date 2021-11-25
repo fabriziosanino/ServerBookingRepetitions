@@ -94,7 +94,7 @@ public class ServletManagmentAdministrator extends HttpServlet {
                     e.printStackTrace();
                 }
             } else if(type.equals("deleteTeacher")) {
-                int idTeacher = Integer.valueOf(request.getParameter("idTeach"));
+                int idTeacher = Integer.valueOf(request.getParameter("idTeacher"));
 
                 JSONObject json = dao.deleteTeacher(idTeacher);
 
@@ -146,6 +146,48 @@ public class ServletManagmentAdministrator extends HttpServlet {
                             Service.setError(jsonObject, "failed to insert new course");
                         else {
                             jsonObject.put("done", true);
+                            jsonObject.put("idCourse", json.getInt("idCourse"));
+                        }
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if(type.equals("addTeacher")) {
+                String mail = request.getParameter("mail");
+                String surname = request.getParameter("surname");
+                String name = request.getParameter("name");
+
+                JSONObject json = dao.insertTeacher(mail, surname, name);
+
+                try {
+                    if(json.getBoolean("done")) {
+                        if(json.getInt("inserted") == -1)
+                            Service.setError(jsonObject, "failed to insert new teacher");
+                        else {
+                            jsonObject.put("done", true);
+                            jsonObject.put("idTeacher", json.getInt("idTeacher"));
+                        }
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if(type.equals("addTeach")) {
+                int idTeacher = Integer.valueOf(request.getParameter("idTeacher"));
+                int idCourse = Integer.valueOf(request.getParameter("idCourse"));
+
+                JSONObject json = dao.insertTeach(idTeacher, idCourse);
+
+                try {
+                    if(json.getBoolean("done")) {
+                        if(json.getInt("inserted") == -1)
+                            Service.setError(jsonObject, "failed to insert new teach");
+                        else {
+                            jsonObject.put("done", true);
+                            jsonObject.put("idTeach", json.getInt("idTeach"));
                         }
                     } else {
                         Service.setError(jsonObject, json.getString("error"));
