@@ -175,47 +175,6 @@ public class DAO {
         return jsonObject;
     }
 
-    /*
-    * @return: a JSONArray like this:
-      JSONArray dbFreeRepetitions =
-               [
-                   {
-                     day:monday,
-                     startTime:15:00,
-                     coursesList:[
-                                   {
-                                       Title: Prog III,
-                                       IDCourse: 5,
-                                       teachersList:[
-                                            {
-                                                Surname: Esposito,
-                                                Name: Roberto,
-                                                IDTeacher: 1
-                                            },
-                                            {
-                                                 Surname: Aringhieri,
-                                                 Name: Roberto,
-                                                 IDTeacher:  6
-                                            }
-                                       ]
-                                   },
-                                   {
-                                       Title: IUM,
-                                       IDCourse: 8,
-                                       teachersList:[
-                                            {
-                                                Surname: Esposito,
-                                                Name: Roberto,
-                                                IDTeacher: 1
-                                            }
-                                       ]
-                                   },
-                                   {....}
-                    ]
-                  }
-               ]
-    * */
-
     public JSONObject getCourses() {
         Connection conn = null;
         PreparedStatement st = null;
@@ -373,6 +332,161 @@ public class DAO {
 
         return jsonObject;
     }
+
+    public JSONObject getTeaches() {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray teaches = null;
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            st = conn.prepareStatement("SELECT IDTeacher, IDCourse FROM teaches;");
+            ResultSet rs = st.executeQuery();
+
+            teaches = new JSONArray();
+
+            while (rs.next()) {
+                try {
+                    JSONObject innerObj = new JSONObject();
+                    innerObj.put("IDTeacher", rs.getInt("IDTeacher"));
+                    innerObj.put("IDCourse", rs.getInt("IDCourse"));
+                    teaches.put(innerObj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                jsonObject.put("done", true);
+                jsonObject.put("results", teaches);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject deleteTeach(int idTeacher, int idCourse) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            st = conn.prepareStatement("DELETE FROM teaches WHERE IDTeacher = ? AND IDCourse = ?;");
+            st.setInt(1, idTeacher);
+            st.setInt(2, idCourse);
+            st.executeUpdate();
+
+            try {
+                jsonObject.put("done", true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject insertCourse(String title) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+
+            String query = "INSERT INTO courses VALUES(NULL, ?);";
+            st = conn.prepareStatement(query);
+            st.setString(1, title);
+
+            try {
+                jsonObject.put("done", true);
+                int res = st.executeUpdate();
+                jsonObject.put("inserted", res);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            Service.setError(jsonObject, e.getMessage());
+        } finally {
+            if(conn != null && st != null) {
+                try {
+                    st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    Service.setError(jsonObject, e.getMessage());
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    /*
+    * @return: a JSONArray like this:
+      JSONArray dbFreeRepetitions =
+               [
+                   {
+                     day:monday,
+                     startTime:15:00,
+                     coursesList:[
+                                   {
+                                       Title: Prog III,
+                                       IDCourse: 5,
+                                       teachersList:[
+                                            {
+                                                Surname: Esposito,
+                                                Name: Roberto,
+                                                IDTeacher: 1
+                                            },
+                                            {
+                                                 Surname: Aringhieri,
+                                                 Name: Roberto,
+                                                 IDTeacher:  6
+                                            }
+                                       ]
+                                   },
+                                   {
+                                       Title: IUM,
+                                       IDCourse: 8,
+                                       teachersList:[
+                                            {
+                                                Surname: Esposito,
+                                                Name: Roberto,
+                                                IDTeacher: 1
+                                            }
+                                       ]
+                                   },
+                                   {....}
+                    ]
+                  }
+               ]
+    * */
 
     public JSONObject getFreeRepetitions(String day, String state, String account){
         Connection conn = null;

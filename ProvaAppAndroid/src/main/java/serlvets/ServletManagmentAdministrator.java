@@ -94,13 +94,59 @@ public class ServletManagmentAdministrator extends HttpServlet {
                     e.printStackTrace();
                 }
             } else if(type.equals("deleteTeacher")) {
-                int idTeacher = Integer.valueOf(request.getParameter("idTeacher"));
+                int idTeacher = Integer.valueOf(request.getParameter("idTeach"));
 
                 JSONObject json = dao.deleteTeacher(idTeacher);
 
                 try {
                     if (json.getBoolean("done")) {
                         jsonObject.put("done", true);
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if(type.equals("getTeaches")){
+                JSONObject json = dao.getTeaches();
+
+                try {
+                    if (json.getBoolean("done")) {
+                        jsonObject.put("done", true);
+                        jsonObject.put("results", json.getJSONArray("results"));
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if(type.equals("deleteTeach")) {
+                int idTeacher = Integer.valueOf(request.getParameter("idTeacher"));
+                int idCourse = Integer.valueOf(request.getParameter("idCourse"));
+
+                JSONObject json = dao.deleteTeach(idTeacher, idCourse);
+
+                try {
+                    if (json.getBoolean("done")) {
+                        jsonObject.put("done", true);
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if(type.equals("addCourse")) {
+                String title = request.getParameter("title");
+
+                JSONObject json = dao.insertCourse(title);
+
+                try {
+                    if(json.getBoolean("done")) {
+                        if(json.getInt("inserted") == -1)
+                            Service.setError(jsonObject, "failed to insert new course");
+                        else {
+                            jsonObject.put("done", true);
+                        }
                     } else {
                         Service.setError(jsonObject, json.getString("error"));
                     }
