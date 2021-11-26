@@ -39,12 +39,12 @@ public class ServletManageRepetitions extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+
         String newState = request.getParameter("newState");
         String IDRepetition = request.getParameter("IDRepetition");
 
         String token = request.getParameter("sessionToken");
-
-        response.setHeader("Access-Control-Allow-Origin", "*");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
