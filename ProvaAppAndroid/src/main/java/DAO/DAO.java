@@ -684,10 +684,18 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "SELECT IDRepetition, Day, StartTime, Title, Surname, Name, r.IDTeacher AS IDTeacher, r.IDCourse AS IDCourse FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ? and Account = ?;";
-            st = conn.prepareStatement(query);
-            st.setString(1, state);
-            st.setString(2, account);
+            String query = "";
+            if(account.equals("all")) {
+                query = "SELECT Account, IDRepetition, Day, StartTime, Title, Surname, Name, r.IDTeacher AS IDTeacher, r.IDCourse AS IDCourse FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ?;";
+                st = conn.prepareStatement(query);
+                st.setString(1, state);
+            } else {
+                query = "SELECT IDRepetition, Day, StartTime, Title, Surname, Name, r.IDTeacher AS IDTeacher, r.IDCourse AS IDCourse FROM courses c JOIN (repetitions r JOIN teachers t ON r.IDTeacher = t.IDTeacher ) ON r.IDCourse = c.IDCourse WHERE State = ? and Account = ?;";
+                st = conn.prepareStatement(query);
+                st.setString(1, state);
+                st.setString(2, account);
+            }
+
             ResultSet rs = st.executeQuery();
 
             dbBookedHistoryRepetitions = new JSONArray();
@@ -702,6 +710,10 @@ public class DAO {
                     innerObj.put("name", rs.getString("Name"));
                     innerObj.put("idCourse", rs.getInt("IDCourse"));
                     innerObj.put("idTeacher", rs.getInt("IDTeacher"));
+
+                    if(account.equals("all")) {
+                        innerObj.put("Account", rs.getString("Account"));
+                    }
                     dbBookedHistoryRepetitions.put(innerObj);
                 } catch (JSONException e) {
                     e.printStackTrace();

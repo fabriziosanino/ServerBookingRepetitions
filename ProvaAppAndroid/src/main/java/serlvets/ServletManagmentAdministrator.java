@@ -146,7 +146,6 @@ public class ServletManagmentAdministrator extends HttpServlet {
                             Service.setError(jsonObject, "failed to insert new course");
                         else {
                             jsonObject.put("done", true);
-                            jsonObject.put("idCourse", json.getInt("idCourse"));
                         }
                     } else {
                         Service.setError(jsonObject, json.getString("error"));
@@ -167,7 +166,6 @@ public class ServletManagmentAdministrator extends HttpServlet {
                             Service.setError(jsonObject, "failed to insert new teacher");
                         else {
                             jsonObject.put("done", true);
-                            jsonObject.put("idTeacher", json.getInt("idTeacher"));
                         }
                     } else {
                         Service.setError(jsonObject, json.getString("error"));
@@ -187,7 +185,6 @@ public class ServletManagmentAdministrator extends HttpServlet {
                             Service.setError(jsonObject, "failed to insert new teach");
                         else {
                             jsonObject.put("done", true);
-                            jsonObject.put("idTeach", json.getInt("idTeach"));
                         }
                     } else {
                         Service.setError(jsonObject, json.getString("error"));
