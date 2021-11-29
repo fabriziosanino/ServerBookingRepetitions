@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.mortbay.util.ajax.JSON;
 import service.Service;
 
+import javax.servlet.ServletContext;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -14,10 +15,12 @@ public class DAO {
     private String user;
     private String password;
 
-    public DAO(String url, String usr, String pwd) {
-        this.url = url;
-        this.user = usr;
-        this.password = pwd;
+    public DAO(ServletContext context) {
+        this.url = context.getInitParameter("DB-URL");;
+        this.user = context.getInitParameter("user");;
+        this.password = context.getInitParameter("password");
+
+        registerDriver();
     }
 
     public static void registerDriver() {

@@ -18,18 +18,10 @@ import java.io.PrintWriter;
 
 @WebServlet(name = "ServletBookARepetition", value = "/servlet-book-a-repetition")
 public class ServletBookARepetition extends HttpServlet {
-    private String url;
-    private String user;
-    private String password;
     private DAO dao;
 
     public void init(ServletConfig config) {
-        ServletContext context = config.getServletContext();
-        url = context.getInitParameter("DB-URL");
-        user = context.getInitParameter("user");
-        password = context.getInitParameter("password");
-        dao = new DAO(url, user, password);
-        dao.registerDriver();
+        dao = new DAO(config.getServletContext());
     }
 
     @Override
