@@ -575,6 +575,8 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
+            conn.setAutoCommit(false);
+
             st = conn.prepareStatement("SELECT IDCourse, Title FROM courses;");
             ResultSet courses = st.executeQuery();
             st = conn.prepareStatement("SELECT t.IDCourse, c.Title, t.IDTeacher, tc.Surname, tc.Name FROM teaches as t natural join teachers as tc natural join courses as c;");
@@ -583,6 +585,8 @@ public class DAO {
             st.setString(1, state);
             st.setString(2, day);
             ResultSet bookedRepetitions = st.executeQuery();
+
+            conn.commit();
 
             try {
                 jsonObject.put("done", true);
@@ -605,8 +609,6 @@ public class DAO {
 
         return jsonObject;
     }
-
-    //TODO: controllare le chiusure di connessione nelle finally
 
     /*
     * This method returns the ALL the free courses and teachers available in a certain hour and day (for all the week)
