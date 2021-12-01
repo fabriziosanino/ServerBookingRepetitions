@@ -567,7 +567,7 @@ public class DAO {
                ]
     * */
 
-    public JSONObject getFreeRepetitions(String day, String state, String account){
+    public JSONObject getFreeRepetitions(String day, String[] state, String account){
         Connection conn = null;
         PreparedStatement st = null;
         JSONObject jsonObject = new JSONObject();
@@ -581,9 +581,10 @@ public class DAO {
             ResultSet courses = st.executeQuery();
             st = conn.prepareStatement("SELECT t.IDCourse, c.Title, t.IDTeacher, tc.Surname, tc.Name FROM teaches as t natural join teachers as tc natural join courses as c;");
             ResultSet coursesTeachersAss = st.executeQuery();
-            st = conn.prepareStatement("SELECT Account, Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE State = ? and Day = ?;");
-            st.setString(1, state);
-            st.setString(2, day);
+            st = conn.prepareStatement("SELECT Account, Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE (State = ? or State = ?)and Day = ?;");
+            st.setString(1, state[0]);
+            st.setString(2, state[1]);
+            st.setString(3, day);
             ResultSet bookedRepetitions = st.executeQuery();
 
             conn.commit();

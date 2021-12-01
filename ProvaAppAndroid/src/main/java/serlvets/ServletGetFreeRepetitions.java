@@ -46,7 +46,11 @@ public class ServletGetFreeRepetitions extends HttpServlet {
     if (day == null) {
       Service.setError(jsonObject, "day not found");
     } else {
-      JSONObject json = dao.getFreeRepetitions(day, "Active", account);
+      String[] states = new String[2];
+      states[0]="Active";
+      states[1]="Done";
+
+      JSONObject json = dao.getFreeRepetitions(day, states, account);
 
       try {
         if(json.getBoolean("done")) {
