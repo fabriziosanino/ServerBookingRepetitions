@@ -11,9 +11,10 @@ DROP TABLE if exists iumtweb.Courses;
 CREATE TABLE iumtweb.Courses(
     IDCourse MEDIUMINT NOT NULL AUTO_INCREMENT,
     Title VARCHAR(50) NOT NULL,
+    Deleted BOOLEAN,
     PRIMARY KEY (IDCourse)
 );
-INSERT INTO iumtweb.Courses (Title) VALUES ('Programmazione III'),('Basi di Dati'),('Sistemi Operativi'),('Analisi I'),('Fisica I'),('Reti I'),('Logica');
+INSERT INTO iumtweb.Courses (Title, Deleted) VALUES ('Programmazione III', False), ('Basi di Dati', False),('Sistemi Operativi', False),('Analisi I', False),('Fisica I', False),('Reti I', False),('Logica', False);
 CREATE TABLE iumtweb.Users(
     Account VARCHAR(50) NOT NULL PRIMARY KEY,
     Pwd VARCHAR(50) NOT NULL,
@@ -32,22 +33,23 @@ CREATE TABLE iumtweb.Teachers(
     Mail VARCHAR(50) NOT NULL,
     Surname VARCHAR(50) NOT NULL,
     Name VARCHAR(50) NOT NULL,
+    Deleted BOOLEAN,
     PRIMARY KEY (IDTeacher)
 );
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'marinosegnan@unito.it', 'Segnan', 'Marino'); 
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'ardissonoliliana@unito.it', 'Ardissono', 'Liliana');
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'espositoroberto@unito.it', 'Esposito', 'Roberto');
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'bottamarco@unito.it', 'Botta', 'Marco');
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'pensaruggero@unito.it', 'Pensa', 'Ruggero');
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'barogliocristina@unito.it', 'Baroglio', 'Cristina');
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'aringhieriroberto@unito.it', 'Aringhieri', 'Roberto');
-INSERT INTO iumtweb.Teachers VALUES (NULL, 'binienrico@unito.it', 'Bini', 'Enrico');
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'marinosegnan@unito.it', 'Segnan', 'Marino', False); 
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'ardissonoliliana@unito.it', 'Ardissono', 'Liliana', False);
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'espositoroberto@unito.it', 'Esposito', 'Roberto', False);
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'bottamarco@unito.it', 'Botta', 'Marco', False);
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'pensaruggero@unito.it', 'Pensa', 'Ruggero', False);
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'barogliocristina@unito.it', 'Baroglio', 'Cristina', False);
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'aringhieriroberto@unito.it', 'Aringhieri', 'Roberto', False);
+INSERT INTO iumtweb.Teachers VALUES (NULL, 'binienrico@unito.it', 'Bini', 'Enrico', False);
 CREATE TABLE iumtweb.Teaches(
     IDTeacher MEDIUMINT NOT NULL,
     IDCourse MEDIUMINT NOT NULL,
     PRIMARY KEY (IDTeacher, IDCourse),
-    FOREIGN KEY (IDTeacher) REFERENCES Teachers(IDTeacher) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (IDCourse) REFERENCES Courses(IDCourse) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (IDTeacher) REFERENCES Teachers(IDTeacher) ON UPDATE CASCADE ON DELETE NO ACTION,
+    FOREIGN KEY (IDCourse) REFERENCES Courses(IDCourse) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 INSERT INTO iumtweb.Teaches VALUES (1,1);
 INSERT INTO iumtweb.Teaches VALUES (1,3);
@@ -88,8 +90,8 @@ CREATE TABLE iumtweb.Repetitions(
     Account VARCHAR(50) NOT NULL,
     State VARCHAR(10) NOT NULL CHECK (State='Active' OR State='Cancelled' OR State='Done'),
     PRIMARY KEY (IDRepetition),
-    FOREIGN KEY (IDTeacher, IDCourse) REFERENCES Teaches(IDTeacher, IDCourse) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (Account) REFERENCES Users(Account) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (IDTeacher, IDCourse) REFERENCES Teaches(IDTeacher, IDCourse) ON UPDATE CASCADE ON DELETE NO ACTION,
+    FOREIGN KEY (Account) REFERENCES Users(Account) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 INSERT INTO iumtweb.Repetitions VALUES (NULL, "Monday", "15:00", 6, 2, "client1@email.com", "Active");
 INSERT INTO iumtweb.Repetitions VALUES (NULL, "Monday", "17:00", 5, 5, "client1@email.com", "Active");

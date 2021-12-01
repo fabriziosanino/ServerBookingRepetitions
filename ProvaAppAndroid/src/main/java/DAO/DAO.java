@@ -186,7 +186,7 @@ public class DAO {
 
         try {
             conn = DriverManager.getConnection(url, user, password);
-            st = conn.prepareStatement("SELECT IDCourse, Title FROM courses;");
+            st = conn.prepareStatement("SELECT IDCourse, Title FROM courses WHERE Deleted <> 1;");
             ResultSet rs = st.executeQuery();
 
             courses = new JSONArray();
@@ -231,9 +231,18 @@ public class DAO {
 
         try {
             conn = DriverManager.getConnection(url, user, password);
-            st = conn.prepareStatement("DELETE FROM courses WHERE IDCourse = ?;");
+
+            conn.setAutoCommit(false);
+
+            st = conn.prepareStatement("UPDATE courses SET Deleted = 1 WHERE IDCourse = ?;");
             st.setInt(1, idCourse);
             st.executeUpdate();
+
+            st = conn.prepareStatement("DELETE FROM teaches WHERE IDCourse = ?");
+            st.setInt(1, idCourse);
+            st.executeUpdate();
+
+            conn.commit();
 
             try {
                 jsonObject.put("done", true);
@@ -264,7 +273,7 @@ public class DAO {
 
         try {
             conn = DriverManager.getConnection(url, user, password);
-            st = conn.prepareStatement("SELECT IDTeacher, Mail, Surname, Name FROM teachers;");
+            st = conn.prepareStatement("SELECT IDTeacher, Mail, Surname, Name FROM teachers WHERE Deleted <> 1;");
             ResultSet rs = st.executeQuery();
 
             teachers = new JSONArray();
@@ -311,9 +320,18 @@ public class DAO {
 
         try {
             conn = DriverManager.getConnection(url, user, password);
-            st = conn.prepareStatement("DELETE FROM teachers WHERE IDTeacher = ?;");
+
+            conn.setAutoCommit(false);
+
+            st = conn.prepareStatement("UPDATE teachers SET Deleted = 1 WHERE IDTeacher = ?;");
             st.setInt(1, idTeacher);
             st.executeUpdate();
+
+            st = conn.prepareStatement("DELETE FROM teaches WHERE IDTeacher = ?");
+            st.setInt(1, idTeacher);
+            st.executeUpdate();
+
+            conn.commit();
 
             try {
                 jsonObject.put("done", true);
@@ -392,6 +410,7 @@ public class DAO {
 
         try {
             conn = DriverManager.getConnection(url, user, password);
+
             st = conn.prepareStatement("DELETE FROM teaches WHERE IDTeacher = ? AND IDCourse = ?;");
             st.setInt(1, idTeacher);
             st.setInt(2, idCourse);
@@ -426,7 +445,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "INSERT INTO courses VALUES(NULL, ?);";
+            String query = "INSERT INTO courses VALUES(NULL, ?, 0);";
             st = conn.prepareStatement(query);
             st.setString(1, title);
 
@@ -461,7 +480,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "INSERT INTO teachers VALUES(NULL, ?, ?, ?);";
+            String query = "INSERT INTO teachers VALUES(NULL, ?, ?, ?, 0);";
             st = conn.prepareStatement(query);
             st.setString(1, mail);
             st.setString(2, surname);
