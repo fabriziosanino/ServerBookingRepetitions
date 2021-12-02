@@ -1,4 +1,4 @@
-package serlvets;
+package servlets;
 
 import DAO.DAO;
 import org.json.*;
@@ -6,7 +6,6 @@ import service.Service;
 
 import java.io.*;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;

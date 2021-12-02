@@ -1,4 +1,4 @@
-package serlvets;
+package servlets;
 
 import DAO.DAO;
 import org.json.JSONException;

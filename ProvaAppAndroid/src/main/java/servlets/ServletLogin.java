@@ -1,4 +1,4 @@
-package serlvets;
+package servlets;
 
 import DAO.DAO;
 import DAO.User;
@@ -9,8 +9,6 @@ import service.Service;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 

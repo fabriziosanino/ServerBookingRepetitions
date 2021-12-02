@@ -1,7 +1,6 @@
-package serlvets;
+package servlets;
 
 import DAO.DAO;
-import DAO.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 import service.Service;

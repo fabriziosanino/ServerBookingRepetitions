@@ -238,7 +238,7 @@ public class DAO {
             st.setInt(1, idCourse);
             st.executeUpdate();
 
-            st = conn.prepareStatement("DELETE FROM teaches WHERE IDCourse = ?");
+            st = conn.prepareStatement("UPDATE teaches SET Deleted = 1 WHERE IDCourse = ?");
             st.setInt(1, idCourse);
             st.executeUpdate();
 
@@ -327,7 +327,7 @@ public class DAO {
             st.setInt(1, idTeacher);
             st.executeUpdate();
 
-            st = conn.prepareStatement("DELETE FROM teaches WHERE IDTeacher = ?");
+            st = conn.prepareStatement("UPDATE teaches SET Deleted = 1 WHERE IDTeacher = ?;");
             st.setInt(1, idTeacher);
             st.executeUpdate();
 
@@ -362,7 +362,7 @@ public class DAO {
 
         try {
             conn = DriverManager.getConnection(url, user, password);
-            st = conn.prepareStatement("SELECT teachers.IDTeacher, courses.IDCourse, courses.Title, teachers.Name, teachers.Surname FROM teachers JOIN (teaches JOIN courses ON teaches.IDCourse = courses.IDCourse) ON teachers.IDTeacher = teaches.IDTeacher;");
+            st = conn.prepareStatement("SELECT teachers.IDTeacher, courses.IDCourse, courses.Title, teachers.Name, teachers.Surname FROM teachers JOIN (teaches JOIN courses ON teaches.IDCourse = courses.IDCourse) ON teachers.IDTeacher = teaches.IDTeacher WHERE teaches.Deleted <> 1;");
             ResultSet rs = st.executeQuery();
 
             teaches = new JSONArray();
@@ -411,7 +411,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            st = conn.prepareStatement("DELETE FROM teaches WHERE IDTeacher = ? AND IDCourse = ?;");
+            st = conn.prepareStatement("UPDATE teaches SET Deleted=1 WHERE IDTeacher = ? AND IDCourse = ?;");
             st.setInt(1, idTeacher);
             st.setInt(2, idCourse);
             st.executeUpdate();
@@ -517,7 +517,7 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
-            String query = "INSERT INTO teaches VALUES(?, ?);";
+            String query = "INSERT INTO teaches VALUES(?, ?, 0);";
             st = conn.prepareStatement(query);
             st.setInt(1, idTeacher);
             st.setInt(2, idCourse);
@@ -596,9 +596,9 @@ public class DAO {
 
             conn.setAutoCommit(false);
 
-            st = conn.prepareStatement("SELECT IDCourse, Title FROM courses;");
+            st = conn.prepareStatement("SELECT IDCourse, Title FROM courses WHERE Deleted<>1;");
             ResultSet courses = st.executeQuery();
-            st = conn.prepareStatement("SELECT t.IDCourse, c.Title, t.IDTeacher, tc.Surname, tc.Name FROM teaches as t natural join teachers as tc natural join courses as c;");
+            st = conn.prepareStatement("SELECT t.IDCourse, c.Title, t.IDTeacher, tc.Surname, tc.Name FROM teaches as t natural join teachers as tc natural join courses as c WHERE t.Deleted <>1;");
             ResultSet coursesTeachersAss = st.executeQuery();
             st = conn.prepareStatement("SELECT Account, Day, StartTime, IDCourse, IDTeacher FROM repetitions WHERE (State = ? or State = ?)and Day = ?;");
             st.setString(1, state[0]);

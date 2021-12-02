@@ -1,7 +1,6 @@
-package serlvets;
+package servlets;
 
 import DAO.DAO;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import service.Service;
@@ -11,7 +10,6 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 @WebServlet(name = "ServletGetFreeRepetitions", value = "/servlet-get-free-repetitions")
 public class ServletGetFreeRepetitions extends HttpServlet {
