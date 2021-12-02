@@ -238,6 +238,17 @@ public class DAO {
             st.setInt(1, idCourse);
             st.executeUpdate();
 
+            st = conn.prepareStatement("SELECT IDRepetition FROM repetitions WHERE IDCourse = ?;");
+            st.setInt(1, idCourse);
+            ResultSet rs = st.executeQuery();
+
+            while(rs.next()) {
+                st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE IDRepetition = ?");
+                st.setString(1, "Cancelled");
+                st.setInt(2, rs.getInt("IDRepetition"));
+                st.executeUpdate();
+            }
+
             st = conn.prepareStatement("UPDATE teaches SET Deleted = 1 WHERE IDCourse = ?");
             st.setInt(1, idCourse);
             st.executeUpdate();
@@ -327,6 +338,17 @@ public class DAO {
             st.setInt(1, idTeacher);
             st.executeUpdate();
 
+            st = conn.prepareStatement("SELECT IDRepetition FROM repetitions WHERE IDTeacher = ?;");
+            st.setInt(1, idTeacher);
+            ResultSet rs = st.executeQuery();
+
+            while(rs.next()) {
+                st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE IDRepetition = ?");
+                st.setString(1, "Cancelled");
+                st.setInt(2, rs.getInt("IDRepetition"));
+                st.executeUpdate();
+            }
+
             st = conn.prepareStatement("UPDATE teaches SET Deleted = 1 WHERE IDTeacher = ?;");
             st.setInt(1, idTeacher);
             st.executeUpdate();
@@ -411,10 +433,27 @@ public class DAO {
         try {
             conn = DriverManager.getConnection(url, user, password);
 
+            conn.setAutoCommit(false);
+
             st = conn.prepareStatement("UPDATE teaches SET Deleted=1 WHERE IDTeacher = ? AND IDCourse = ?;");
             st.setInt(1, idTeacher);
             st.setInt(2, idCourse);
             st.executeUpdate();
+
+            st = conn.prepareStatement("SELECT IDRepetition FROM repetitions WHERE IDTeacher = ? AND IDCourse = ?;");
+            st.setInt(1, idTeacher);
+            st.setInt(2, idCourse);
+            ResultSet rs = st.executeQuery();
+
+            while(rs.next()) {
+                st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE IDRepetition = ?");
+                st.setString(1, "Cancelled");
+                st.setInt(2, rs.getInt("IDRepetition"));
+                st.executeUpdate();
+            }
+
+
+            conn.commit();
 
             try {
                 jsonObject.put("done", true);
