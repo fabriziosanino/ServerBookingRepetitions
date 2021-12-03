@@ -101,4 +101,4 @@ INSERT INTO iumtweb.Repetitions VALUES (NULL, "Wednesday", "16:00", 7, 3, "clien
 INSERT INTO iumtweb.Repetitions VALUES (NULL, "Tuesday", "15:00", 2, 4, "client1@email.com", "Done");
 INSERT INTO iumtweb.Repetitions VALUES (NULL, "Monday", "16:00", 1, 8, "client2@email.com", "Active");
 INSERT INTO iumtweb.Repetitions VALUES (NULL, "Wednesday", "17:00", 3, 4, "client2@email.com", "Active");
-INSERT INTO iumtweb.Repetitions VALUES (NULL, "Friday", "19:00", 6, 2, "client2@email.com", "Cancelled");
+INSERT INTO iumtweb.Repetitions VALUES (NULL, "Friday", "18:00", 6, 2, "client2@email.com", "Cancelled");
