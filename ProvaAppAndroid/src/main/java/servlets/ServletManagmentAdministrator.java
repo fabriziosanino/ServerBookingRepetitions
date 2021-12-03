@@ -31,17 +31,15 @@ public class ServletManagmentAdministrator extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String type = request.getParameter("type");
-        String token = request.getParameter("sessionToken");
 
         response.setHeader("Access-Control-Allow-Origin", "*");
-
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
         HttpSession session = request.getSession(false);
 
-        if(session != null && session.getId().equals(token)) {
+        if(session != null) {
             if (type == null) {
                 Service.setError(jsonObject, "type not found");
             } else if(type.equals("getCourses")){

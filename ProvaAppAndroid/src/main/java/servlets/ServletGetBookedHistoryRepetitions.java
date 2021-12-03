@@ -37,7 +37,6 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String state = request.getParameter("state");
         String account = request.getParameter("account");
-        String token = request.getParameter("sessionToken");
 
         response.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -47,7 +46,7 @@ public class ServletGetBookedHistoryRepetitions extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        if(session != null && session.getId().equals(token)) {
+        if(session != null) {
             if (state == null || account == null) {
                 Service.setError(jsonObject, "state or account not found");
             } else {

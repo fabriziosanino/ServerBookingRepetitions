@@ -35,15 +35,13 @@ public class ServletManageRepetitions extends HttpServlet {
         String newState = request.getParameter("newState");
         String IDRepetition = request.getParameter("IDRepetition");
 
-        String token = request.getParameter("sessionToken");
-
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         JSONObject jsonObject = new JSONObject();
 
         HttpSession session = request.getSession(false);
 
-        if(session != null && session.getId().equals(token)) {
+        if(session != null) {
             if (newState == null) {
                 Service.setError(jsonObject, "state not found");
             } else {

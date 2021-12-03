@@ -243,7 +243,7 @@ public class DAO {
             ResultSet rs = st.executeQuery();
 
             while(rs.next()) {
-                st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE IDRepetition = ?");
+                st = conn.prepareStatement("UPDATE repetitions SET State = ? WHERE IDRepetition = ? and State <> 'Done';");
                 st.setString(1, "Cancelled");
                 st.setInt(2, rs.getInt("IDRepetition"));
                 st.executeUpdate();
@@ -343,7 +343,7 @@ public class DAO {
             ResultSet rs = st.executeQuery();
 
             while(rs.next()) {
-                st = conn.prepareStatement("UPDATE repetitions SET state = ? WHERE IDRepetition = ?");
+                st = conn.prepareStatement("UPDATE repetitions SET State = ? WHERE IDRepetition = ? and State <> 'Done';");
                 st.setString(1, "Cancelled");
                 st.setInt(2, rs.getInt("IDRepetition"));
                 st.executeUpdate();

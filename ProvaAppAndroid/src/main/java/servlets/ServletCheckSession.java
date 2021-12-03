@@ -76,31 +76,26 @@ public class ServletCheckSession extends HttpServlet {
         response.addHeader("Access-Control-Allow-Origin", "*");
 
         if (session != null) {
-            String sessionTokenPassed = request.getParameter("sessionToken");
             String sessionToken = session.getId();
 
-            if (sessionTokenPassed != null && sessionTokenPassed.equals(sessionToken)) {
-                if (session.getAttribute("account") != null) {
-                    String account = session.getAttribute("account").toString();
-                    JSONObject json = dao.checkSession(account);
+            if (session.getAttribute("account") != null) {
+                String account = session.getAttribute("account").toString();
+                JSONObject json = dao.checkSession(account);
 
-                    try {
-                        if (json.getBoolean("done")) {
-                            User u = (User) json.get("result");
-                            jsonObject.put("done", true);
-                            jsonObject.put("account", u.getAccount());
-                            jsonObject.put("name", u.getName());
-                            jsonObject.put("surname", u.getSurname());
-                            jsonObject.put("role", u.getRole());
-                            jsonObject.put("token", sessionToken);
-                        } else {
-                            Service.setError(jsonObject, json.getString("error"));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                try {
+                    if (json.getBoolean("done")) {
+                        User u = (User) json.get("result");
+                        jsonObject.put("done", true);
+                        jsonObject.put("account", u.getAccount());
+                        jsonObject.put("name", u.getName());
+                        jsonObject.put("surname", u.getSurname());
+                        jsonObject.put("role", u.getRole());
+                        jsonObject.put("token", sessionToken);
+                    } else {
+                        Service.setError(jsonObject, json.getString("error"));
                     }
-                } else {
-                    Service.setError(jsonObject, "no session");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             } else {
                 Service.setError(jsonObject, "no session");

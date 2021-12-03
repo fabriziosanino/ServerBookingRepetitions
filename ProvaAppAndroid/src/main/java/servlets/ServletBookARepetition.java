@@ -40,8 +40,6 @@ public class ServletBookARepetition extends HttpServlet {
         String IDTeacher = request.getParameter("IDTeacher");
         String account = request.getParameter("account");
 
-        String token = request.getParameter("sessionToken");
-
         response.setHeader("Access-Control-Allow-Origin", "*");
 
         response.setContentType("application/json");
@@ -50,7 +48,7 @@ public class ServletBookARepetition extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        if (session != null && session.getId().equals(token)) {
+        if (session != null) {
             if (day == null || startTime == null || IDCourse == null || IDTeacher == null || account == null) {
                 Service.setError(jsonObject, "day, startTime, IDCourse, IDTeacher or account not found");
             } else {
